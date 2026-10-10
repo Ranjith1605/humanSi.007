@@ -11,8 +11,8 @@ The Rule Book has two parts:
   roles (RACI), the minimum rule ("no use case enters live deployment below
   readiness Level 3") and the integrity rules. This part says *how*.
 
-The game flies six sectors, one per gate. Each sector's flight mechanic acts out
-its module, and at the gate the pilot gives verdicts on two real-world-style
+The game, *Nova Run*, is an original fast side-scrolling platformer with six
+levels, one per gate. Each level's mechanic acts out its module, and at the gate the pilot gives verdicts on two real-world-style
 scenarios. Clearing all six gates at readiness Level 3 or above earns
 **launch clearance**, which unlocks the **Model Hangar**: a catalog of open-source
 and open-weight AI models. On the fleet server it also unlocks the **SI console**,
@@ -71,7 +71,8 @@ web/
   hangar.html              Model Hangar + SI console
   data/rulebook.json  data/models.json
   css/tokens.css  css/landing.css  css/game.css  css/hangar.css
-  js/api.js  js/scoring.js  js/scoring.test.mjs  js/landing.js  js/hangar.js  js/game/*.js
+  js/api.js  js/scoring.js  js/scoring.test.mjs  js/landing.js  js/hangar.js
+  js/game/*.js  js/game/levels/*.js  js/game/levels.test.mjs
   assets/img/  assets/video/
 scripts/build-media.sh     regenerates every image/video variant from the original image
 docs/ARCHITECTURE.md
@@ -161,63 +162,140 @@ roles gathered around the table.
 `<video autoplay muted loop playsinline poster=…>`, choosing 16×9 or 9×16 by
 orientation. With `prefers-reduced-motion: reduce`, show the poster only.
 
-## Design direction: minimal and cinematic
+## Design direction: minimal pages, a vivid game
 
-Few elements, lots of space, strong type (Orbitron display, Space Grotesk body),
-the briefing video as the emotional anchor, glass panels with thin cyan edges,
-one accent per gate (the module's `color`). No clutter, no emoji, no fake HUD numbers.
-Motion is slow and purposeful. Everything works at 360 px wide with a 16 px gutter
-and no horizontal scroll.
+The landing page and the hangar are minimal and cinematic: few elements, lots of
+space, strong type (Orbitron display, Space Grotesk body), the briefing video as
+the emotional anchor, glass panels with thin cyan edges, and one accent per gate
+(the module's `color`). No clutter, no emoji, no fake HUD numbers. Everything
+works at 360 px wide with a 16 px gutter and no horizontal scroll.
 
-## The game (`play.html`)
+The game is the opposite on purpose: vivid, fast, colourful, crafted, like the
+great 90s PC side-scrolling platformers people played for hours. It uses **all
+original** characters, art, names and level design. Nothing is copied from any
+existing game.
 
-Characters from the image: **the Captain** (`comms-captain`) and **Nova, the
-ship's penguin navigator** (`comms-navigator`). One of them briefs each sector
-over comms.
+## The game: *Nova Run* (`play.html`)
 
-Flow: title (disclaimer, callsign, mode badge) → for each of the six sectors:
-briefing (gate number, module name, gate question, mechanic how-to, one comms
-line) → flight (~35–45 s) → **gate**: two scenarios. Each is answered PASS /
-REVISE / STOP (keys 1/2/3) and immediately explained, with the cited module and
-articles shown → next sector. After sector 6: readiness level revealed. At Level 3
-or above with every gate cleared, **launch** (finale with the briefing video,
-vision and oath, then "Clearance granted → Model Hangar"). Below Level 3 the finale
-explains the minimum rule ("no live deployment below Level 3") and offers to fly
-again. Then the debrief: per-sector scores, rank (SHU/HA/RI), integrity, readiness,
-submission to the fleet board or solo log, and the board itself. If the hull hits
-zero, the run ends in that sector (`cleared:false`, all verdicts `-1`) and goes
-to the debrief.
+An original, fast side-scrolling platformer. The hero is **Nova, the ship's
+penguin navigator** from the briefing image, re-imagined as a quick, springy
+space-penguin with a visor and a small thruster pack. **The Captain**
+(`comms-captain`) and Nova (`comms-navigator`) brief each level over comms.
 
-Flight: the sector scrolls forward on its own; the pilot steers freely with
-inertia. Controls: arrows/WASD; Space = pulse (dignity); P/Esc = pause; M = mute.
-Mouse/touch: drag to steer, plus an on-screen pulse button. Drift rocks damage the
-hull. Spawn counts come from `sector.spawn` exactly, so counters can never exceed
-their caps. Every sector has ordinary `cores`. Mechanics (`sector.mechanic`):
+### Feel (this is what makes it addictive, so get it right)
+- **Speed and momentum**: quick acceleration, high top speed, a little skid on
+  turning, run momentum carried into jumps.
+- **Jump**: variable height (release early for a short hop), coyote time (~100 ms),
+  jump buffering (~120 ms), and a **flap-glide**: hold jump in the air to slow the
+  fall, the penguin's thruster flutter.
+- **Level toys**: springs (big bounces), speed boosters (dash strips), one-way
+  platforms, moving platforms, crumbling platforms, and wind or updraft columns in
+  some worlds.
+- **Secrets everywhere**: hidden alcoves and breakable or false walls holding gems.
+  Every spawn must still be reachable, and the gate itself must never need a secret.
+- **Juice**: squash and stretch, dust puffs, sparkle bursts on pickup, gentle screen
+  shake on hits (off with reduced motion), a pickup "streak" counter with rising
+  chime pitch, smooth camera with look-ahead, and 3–4 parallax background layers.
+- **Hull** is shown as 5 energy cells (each 20 hull). A hit costs one cell, gives
+  knockback and ~1 s of invulnerability blink. Falling into a pit respawns Nova at
+  the last checkpoint beacon and costs one cell. Zero cells ends the run in that
+  level (`cleared:false`, all verdicts `-1`) and goes to the debrief.
+- **Harmony pulse** (X/J/Enter, or the touch button): Nova's only "blaster", and it
+  is not a weapon. Rings of light that **calm** creatures. Calmed discord critters
+  (M3) turn into friendly sparkles (`harmonized`+1). Glitch-bots (the `drift`
+  hazards, in every level) are only stunned for ~2 s and score nothing. Pulse has a
+  short cooldown.
+- **Replay hooks**, all real and local: per-level best time and completion %
+  (gems, mechanic items, correct verdicts) saved in `localStorage`, and a level
+  **seal** (bronze, silver or gold) for completion. These are personal records
+  only; the score itself always comes from `scoring.js`, and the streak counter is
+  flair that does not change it.
 
-- `scan` (M1 Purpose): hold near a purpose beacon for ~1.2 s → `scans`+1.
-- `integrity` (M2 Triage): red shortcut cores show `+shortcutGain` when taken and
-  drop integrity by `integrityPerShortcut`; at the gate an integrity audit shows
-  `shortcutPenalty` applied. Every shortcut is avoidable.
-- `harmonize` (M3 Dignity): no weapons. Space pulses (with a cooldown) and calms
-  discord fragments in range → `harmonized`+1 each; untouched fragments hurt like rocks.
-- `chain` (M4 Oversight): SI pods (cyan) and human pods (gold). Collecting the
-  opposite kind to the last extends the chain (`chainLinks`+1); the same kind
-  twice breaks it ("an unchecked SI step").
-- `assist` (M5 Adoption): stay near a stranded crew pod for ~1.5 s to tow it →
-  `assists`+1, plus a temporary speed and shield boost.
-- `review` (M6 Lifecycle): registry satellites orbit; when one flashes amber,
-  hold near it for ~1.2 s → `reviews`+1. Each satellite is reviewed at most once.
+### Look
+A crisp neo-retro pixel-art look. Render the world at a low internal resolution
+(e.g. 480×270, adapting to the aspect ratio) and upscale with nearest-neighbour
+(`image-rendering: pixelated`, integer scaling where possible). Draw tiles, the
+penguin sprite (idle, run cycle, jump, fall, glide, hurt, pulse) and props
+**procedurally in code** (pixel arrays or canvas drawing at native resolution,
+cached to offscreen canvases): rich, saturated per-world palettes, highlights
+and dithering, no external sprite files. Each world has its own palette and
+backdrop:
 
-Results must be exact `SectorResult` objects scored with `scoring.js`. `timeMs`
-is simulated time. With `?debug=1` the page exposes
-`window.__humansi = { getState(), setTimescale(n) }`, and `?timescale=N` (1–8)
-speeds the simulation without changing the reported `timeMs`.
+| Level | World | Palette and backdrop |
+|-------|-------|----------------------|
+| G1 Purpose Rift | crystal caverns | violet and magenta crystals, glowing geodes, a distant nebula |
+| G2 Triage Belt | asteroid mining rigs | rust, steel, warning red, scaffolds over the void |
+| G3 Dignity Expanse | biodome gardens | lush greens, water, sunlight shafts through the dome |
+| G4 Oversight Nebula | data city | cyan neon, glass towers, gentle rain |
+| G5 Adoption Drift | engineering deck | amber pipes, steam, conveyor belts |
+| G6 Lifecycle Orbit | orbital station | gold and white, Earth-like planet rising, star trails |
+
+### Structure
+Title (disclaimer, callsign, mode badge, controls, level select limited to levels
+already reached on this device; a full run always starts at G1) → for each level:
+briefing card (gate number, module name, gate question, mechanic how-to, comms
+line) → run → **gate archway** at the end → gate overlay with two scenarios, each
+answered PASS / REVISE / STOP (keys 1/2/3) and immediately explained, with the
+cited module and articles → next level. After G6: readiness reveal → launch finale
+(briefing video, vision, oath, "Clearance granted → Model Hangar") at Level 3+ with
+every gate cleared, or the minimum-rule ending ("no live deployment below
+Level 3", fly again) → debrief (per-level scores, rank SHU/HA/RI, integrity,
+readiness, seals, submission to the fleet board or solo log, and the board).
+
+Levels are hand-designed tile maps (string rows plus an entity legend) in
+`web/js/game/levels/`. Each is ~250–400 tiles wide, takes ~35–60 s for a
+first-time player, and has a start, at least one checkpoint and the gate. Entity
+counts must equal `sector.spawn` **exactly**: `cores` (gems), `humanPods` +
+`siPods`, `stranded` (crew capsules), `discord` (critters), `anomalies` (purpose
+beacons), `satellites` (registry terminals), `shortcuts` (red cores) and `drift`
+(glitch-bots and spike traps). A node test (`web/js/game/levels.test.mjs`,
+`node --test`) checks every level against the rule book: counts, exactly one start,
+exactly one gate, at least one checkpoint, rectangular rows, and every entity on a
+non-solid tile.
+
+Mechanics (`sector.mechanic`) as platformer actions:
+- `scan` (M1): stand within range of a purpose beacon; a ring fills over ~1.2 s → `scans`+1.
+- `integrity` (M2): red shortcut cores float over risky fast routes. Taking one
+  shows `+shortcutGain` and drops integrity by `integrityPerShortcut`; at the gate
+  an integrity audit applies `shortcutPenalty`. Every one is avoidable.
+- `harmonize` (M3): discord critters patrol. The pulse calms them → `harmonized`+1
+  each. Touching an uncalmed one hurts.
+- `chain` (M4): SI pods (cyan) and human pods (gold). Collecting the opposite kind
+  to the last extends the chain (`chainLinks`+1); the same kind twice breaks it
+  ("an unchecked SI step"). The level lays them out so a perfect alternating chain
+  is possible but takes care.
+- `assist` (M5): stand beside a stranded crew capsule for ~1.5 s → `assists`+1;
+  the freed crew member cheers and beams to safety, and Nova gets a short speed boost.
+- `review` (M6): registry terminals take turns flashing amber; stand beside an
+  amber one for ~1.2 s → `reviews`+1. Each is reviewed once.
+
+Every level also has gems (`cores`).
+
+Controls: arrows/WASD to move; Space/Z/K/W/Up to jump (hold to glide); X/J/Enter
+to pulse; Down to look down or drop through one-way platforms; P/Esc to pause;
+M to mute. **Gamepad** via the Gamepad API (left stick or D-pad, A to jump, X or B
+to pulse, Start to pause). **Touch**: on-screen left, right, jump and pulse
+buttons with large hit areas, shown only on touch devices.
+
+Results must be exact `SectorResult` objects scored with `scoring.js`. `timeMs` is
+simulated time from level start to reaching the gate. With `?debug=1` the page
+exposes `window.__humansi = { getState(), setTimescale(n), teleport(x, y) }`, and
+`?timescale=N` (1–8) speeds the simulation without changing the reported `timeMs`.
+`getState()` returns at least `{ screen, levelIndex, results, hull, integrity,
+player: {x, y, vx, vy, onGround}, entities: [{id, kind, x, y, active}], gate: {x, y} }`,
+with coordinates in tiles.
+
+Audio: WebAudio-synthesised chiptune. A short upbeat looping theme per world
+(simple sequencer: bass, arpeggio, drums), pickup chimes whose pitch rises with
+the streak, jump, glide, pulse and gate fanfares. It starts only after a user
+gesture, M mutes, and the setting is remembered.
 
 Accessibility: overlays, briefings, the gate, the finale and the debrief are DOM,
-not canvas, with focus management and full keyboard support. The canvas has a
-text alternative, and all content is also readable on the landing page. Reduced
-motion turns off shake and heavy particles. The game pauses when the tab is
-hidden. Audio is WebAudio-synthesised, starts only after a gesture, and can be muted.
+with focus management and full keyboard support. The canvas has a text
+alternative, and all content is also readable on the landing page. Reduced motion
+turns off shake and heavy particles. The game pauses when the tab is hidden.
+Performance: fixed-timestep simulation (120 Hz), render on rAF, cached tile and
+sprite canvases, only visible tiles drawn, a steady 60 fps on a laptop.
 
 ## The hangar (`hangar.html`)
 
