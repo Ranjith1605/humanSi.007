@@ -34,19 +34,30 @@ The playable core and a proper open-source project around it.
 **Done when:** a new visitor can open the Pages URL, play all six gates, earn
 clearance, and every check in CI is green.
 
-## Phase 1 · Synergy City: the open world (v0.2)
+## Phase 1 · Synergy City: the 3D open world (v0.2)
 
-A top-down open world in the spirit of the early open-world city games: the
-station-city around the ISV Synergy. It has one district per gate, on foot and
-in hover-craft.
+A full 3D open world in the browser: the station-city around the ISV Synergy,
+with one district per gate, explored on foot and by hover-craft.
 
-- World engine: chunked tile map streaming, camera, collisions, day/night cycle, weather.
-- Movement: walking, running, and a hover-craft with drift handling.
-- One fully built district (the Purpose Quarter) as a vertical slice; the other five blocked out.
-- Nova Run's levels become "arcade cabinets" you can visit inside the city.
+- **Engine:** WebGL2 through [three.js](https://threejs.org), MIT-licensed, vendored
+  into the repo at a pinned version, so there is still no build step and no third-party CDN.
+- **City:** generated in code: streets, plazas and towers per district, with
+  instancing and level-of-detail so the whole city streams smoothly.
+- **Look:** stylised low-poly with strong lighting: a day/night cycle, fog, bloom
+  on neon and the skylight glow from the briefing room.
+- **Characters:** Nova and the citizens as low-poly models with simple
+  procedural animation. Any third-party assets are CC0 only, with each source
+  credited in `NOTICE.md`.
+- **Movement:** third-person camera, walking and running, and a hover-craft with
+  drift handling; collisions against buildings and terrain.
+- **Scope:** one fully built district (the Purpose Quarter) as a vertical slice,
+  with the other five blocked out. Nova Run's levels become arcade cabinets you
+  can visit inside the city.
+- **Phones:** touch controls and a lower-detail mode.
 
 **Done when:** you can roam the slice district for 10 minutes at a steady 60 fps
-on a mid-range laptop, with no dead ends and no falling through the world.
+on a mid-range laptop (30 fps on a recent phone in low-detail mode), with no dead
+ends and no falling through the world.
 
 ## Phase 2 · Citizens: a living crowd (v0.3)
 
@@ -58,8 +69,9 @@ language model yet. All of it is deterministic, fast and testable.
 - Utility-based decisions: each agent picks the action that best serves its needs right now.
 - Reactions: citizens notice the player, rumours spread, and moods ripple through districts.
 
-**Done when:** 300 agents run their days at 60 fps, a seeded day replays
-identically, and a debug view explains why each agent is doing what it does.
+**Done when:** 300 agents (instanced, with level-of-detail) run their days at 60 fps
+on a mid-range laptop, a seeded day replays identically, and a debug view
+explains why each agent is doing what it does.
 
 ## Phase 3 · Minds: memory, reflection, plans (v0.4)
 
