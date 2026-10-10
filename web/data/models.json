@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "title": "Model Hangar",
+  "intro": "Open models you can run yourself. Clearing the Six Gates earns launch clearance, but the gates still apply to every real deployment: walk them again for each use case.",
+  "caveat": "Compiled from the publishers' public model cards when this catalog was written. Newer versions may exist and licences can change: read the model card before you download or deploy. \"Open weights\" means the trained model is downloadable; \"fully open\" also publishes the training data and code. Custom licences are not OSI-approved open-source licences.",
+  "runtime": {
+    "name": "Ollama",
+    "url": "https://ollama.com",
+    "steps": [
+      "Install Ollama from ollama.com and start it (it listens on http://localhost:11434).",
+      "Pull a model from the hangar, e.g. `ollama pull qwen2.5:0.5b`.",
+      "Start the HumanSI server with `HUMANSI_OLLAMA_URL=http://localhost:11434 go run ./cmd/humansi`.",
+      "Fly the Six Gates, earn clearance, and open the console."
+    ]
+  },
+  "models": [
+    {
+      "id": "olmo2",
+      "name": "OLMo 2",
+      "publisher": "Allen Institute for AI (Ai2)",
+      "openness": "fully-open",
+      "licence": "Apache 2.0",
+      "licenceKind": "osi",
+      "ollama": "olmo2",
+      "source": "https://huggingface.co/allenai",
+      "note": "Weights, training data and training code are all published: the most inspectable family in the hangar."
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral 7B",
+      "publisher": "Mistral AI",
+      "openness": "open-weights",
+      "licence": "Apache 2.0",
+      "licenceKind": "osi",
+      "ollama": "mistral",
+      "source": "https://huggingface.co/mistralai",
+      "note": "A compact general model. Mistral publishes other models under different licences, so check each card."
+    },
+    {
+      "id": "qwen2.5",
+      "name": "Qwen2.5",
+      "publisher": "Qwen team, Alibaba Cloud",
+      "openness": "open-weights",
+      "licence": "Apache 2.0 for most sizes (some sizes use the Qwen licence)",
+      "licenceKind": "mixed",
+      "ollama": "qwen2.5",
+      "source": "https://huggingface.co/Qwen",
+      "note": "Ships in many sizes; the 0.5B variant runs on modest laptops and is the quickest way to test the console."
+    },
+    {
+      "id": "phi4",
+      "name": "Phi-4",
+      "publisher": "Microsoft",
+      "openness": "open-weights",
+      "licence": "MIT",
+      "licenceKind": "osi",
+      "ollama": "phi4",
+      "source": "https://huggingface.co/microsoft",
+      "note": "A small model focused on reasoning."
+    },
+    {
+      "id": "deepseek-r1",
+      "name": "DeepSeek-R1",
+      "publisher": "DeepSeek",
+      "openness": "open-weights",
+      "licence": "MIT (the smaller distilled variants inherit their Qwen or Llama base licence)",
+      "licenceKind": "mixed",
+      "ollama": "deepseek-r1",
+      "source": "https://huggingface.co/deepseek-ai",
+      "note": "A reasoning model. The full model is very large; the distilled sizes are what most laptops can run."
+    },
+    {
+      "id": "gemma3",
+      "name": "Gemma 3",
+      "publisher": "Google",
+      "openness": "open-weights",
+      "licence": "Gemma Terms of Use (custom, with a prohibited-use policy)",
+      "licenceKind": "custom",
+      "ollama": "gemma3",
+      "source": "https://huggingface.co/google",
+      "note": "Open weights under Google's own terms rather than an OSI licence."
+    },
+    {
+      "id": "llama3.2",
+      "name": "Llama 3.2",
+      "publisher": "Meta",
+      "openness": "open-weights",
+      "licence": "Llama 3.2 Community License (custom, with an acceptable-use policy)",
+      "licenceKind": "custom",
+      "ollama": "llama3.2",
+      "source": "https://huggingface.co/meta-llama",
+      "note": "Widely supported; the licence adds conditions that OSI licences do not."
+    }
+  ]
+}

@@ -1,0 +1,756 @@
+{
+  "schemaVersion": 2,
+  "title": "HumanSI Synergy",
+  "subtitle": "The Rule Book for letting Super Intelligence touch real decisions, safely and humanly",
+  "ship": "ISV Synergy",
+  "disclaimer": "Orientation, not legal advice. This Rule Book does not license, certify or authorise anyone, and it is not a compliance guarantee. Anything with legal consequence goes to qualified counsel. The method is designed against the EU AI Act's articles and formatively evaluated; it is not field-validated.",
+  "charter": {
+    "mission": {
+      "headline": "To foster and enlighten a peaceful civilization by empowering humans and Super Intelligence, creating a harmonious partnership between the two.",
+      "body": "I am committed to bridging the gap between human potential and Super Intelligence, nurturing a future where both collaborate in balance to cultivate a more enlightened, ethical, and peaceful world. Through innovation, education, and responsible development, I aim to empower both humans and SI systems, ensuring that their coexistence enhances the collective well-being of humanity while safeguarding core human values."
+    },
+    "vision": {
+      "headline": "To shape a future where humans and Super Intelligence work in true synergy, unlocking transformative progress for civilization while preserving the essence of humanity, promoting shared growth, and ensuring peaceful coexistence.",
+      "body": "A civilization where consciousness meets code, and progress is measured not only by innovation, but by how much it uplifts humanity."
+    },
+    "oath": {
+      "headline": "This is not just a vision. It is a responsibility.",
+      "body": "A declaration of peaceful power, ethical evolution, and shared intelligence."
+    },
+    "values": [
+      {
+        "id": "harmony",
+        "name": "Harmony",
+        "glyph": "◎",
+        "color": "#66e1ff",
+        "summary": "Seamless integration between humans and SI.",
+        "articles": [
+          {
+            "id": "H1",
+            "title": "Shared course",
+            "text": "Humans and SI plot the course together. Neither partner steers alone."
+          },
+          {
+            "id": "H2",
+            "title": "Balance over dominance",
+            "text": "Collaboration is measured by balance: no partner's voice is permanently louder than the other's."
+          },
+          {
+            "id": "H3",
+            "title": "Plain signals",
+            "text": "SI explains its reasoning in language the crew can follow, and humans state their intent clearly."
+          }
+        ]
+      },
+      {
+        "id": "empowerment",
+        "name": "Empowerment",
+        "glyph": "⬆",
+        "color": "#ffb547",
+        "summary": "Full potential through mutual support.",
+        "articles": [
+          {
+            "id": "E1",
+            "title": "Lift, don't replace",
+            "text": "SI is deployed to extend what people can do, not to make people unnecessary."
+          },
+          {
+            "id": "E2",
+            "title": "Teach as you go",
+            "text": "Every SI-assisted outcome should leave the human more capable than before."
+          },
+          {
+            "id": "E3",
+            "title": "Support flows both ways",
+            "text": "Humans support SI systems with good data, honest feedback and care; SI supports humans in return."
+          }
+        ]
+      },
+      {
+        "id": "peace",
+        "name": "Peace",
+        "glyph": "☮",
+        "color": "#5dffa6",
+        "summary": "Co-evolution of technology and humanity.",
+        "articles": [
+          {
+            "id": "P1",
+            "title": "No weapons of discord",
+            "text": "Synergy is never aimed at harming people."
+          },
+          {
+            "id": "P2",
+            "title": "Understand first",
+            "text": "In conflict, the first response is understanding, not force."
+          },
+          {
+            "id": "P3",
+            "title": "Grow at a shared pace",
+            "text": "Technology and humanity co-evolve at a pace both can absorb."
+          }
+        ]
+      },
+      {
+        "id": "innovation",
+        "name": "Innovation",
+        "glyph": "✦",
+        "color": "#c58bff",
+        "summary": "Continuous discovery for synergy.",
+        "articles": [
+          {
+            "id": "I1",
+            "title": "Discover openly",
+            "text": "Discoveries are shared so the whole crew learns from them."
+          },
+          {
+            "id": "I2",
+            "title": "Test before trust",
+            "text": "A new capability is tried in safe conditions before it carries the crew."
+          },
+          {
+            "id": "I3",
+            "title": "Measure uplift",
+            "text": "Progress counts when it uplifts humanity, not merely when it is new."
+          }
+        ]
+      },
+      {
+        "id": "ethics",
+        "name": "Ethics",
+        "glyph": "⚖",
+        "color": "#ff6b8b",
+        "summary": "Strong ethical principles in every SI interaction.",
+        "articles": [
+          {
+            "id": "X1",
+            "title": "Human values are the keel",
+            "text": "Core human values are safeguarded in every decision, whatever the speed or the prize."
+          },
+          {
+            "id": "X2",
+            "title": "Accountable command",
+            "text": "A named human stays answerable for every SI action that affects people."
+          },
+          {
+            "id": "X3",
+            "title": "No shortcuts through people",
+            "text": "No gain is worth deceiving, exploiting or harming the crew."
+          }
+        ]
+      }
+    ]
+  },
+  "method": {
+    "name": "The Six Gates",
+    "summary": "Before an SI system touches a real decision, it passes six gates in order. Each gate asks one hard question and ends in a verdict: pass, revise or stop. The Charter says why humans and SI work together; the Six Gates say how.",
+    "generalisation": "The duties attach to what you do with a system, not to the sector you sit in. A municipality and a company using the same tool walk the same six gates: same modules, different emphasis.",
+    "verdicts": [
+      {
+        "id": "pass",
+        "label": "PASS",
+        "meaning": "The gate's question is answered with evidence. Proceed to the next gate."
+      },
+      {
+        "id": "revise",
+        "label": "REVISE",
+        "meaning": "A named gap must be closed first. Fix it, then return to this gate."
+      },
+      {
+        "id": "stop",
+        "label": "STOP",
+        "meaning": "This use case, in this design, does not go ahead. A different design starts again at Gate 1."
+      }
+    ],
+    "triggers": [
+      "At the proposal",
+      "At procurement",
+      "At pilot entry",
+      "At every material change"
+    ],
+    "minimumRule": {
+      "level": 3,
+      "text": "No use case enters live deployment below readiness Level 3."
+    },
+    "stages": [
+      {
+        "id": "shu",
+        "name": "SHU",
+        "motto": "Master the rule",
+        "text": "Learn one form exactly, without improvising: the six modules, the six gates, every claim anchored to an article and a stated limit."
+      },
+      {
+        "id": "ha",
+        "name": "HA",
+        "motto": "Break the rule",
+        "text": "Depart from the form once you can see which parts are essential and which are habit. Break conventions, never the law or the truth."
+      },
+      {
+        "id": "ri",
+        "name": "RI",
+        "motto": "Become the rule",
+        "text": "The method becomes the vocabulary other people use. Ri is diagnosed by other people's behaviour, never by your own conviction."
+      }
+    ],
+    "crewRoles": [
+      {
+        "id": "sponsor",
+        "name": "Executive sponsor"
+      },
+      {
+        "id": "process",
+        "name": "Process owner"
+      },
+      {
+        "id": "system",
+        "name": "System owner"
+      },
+      {
+        "id": "legal",
+        "name": "Legal / compliance"
+      },
+      {
+        "id": "frontline",
+        "name": "Frontline lead"
+      },
+      {
+        "id": "people",
+        "name": "HR / works council"
+      },
+      {
+        "id": "tech",
+        "name": "Technical lead"
+      },
+      {
+        "id": "audit",
+        "name": "Risk / audit"
+      }
+    ],
+    "integrity": [
+      {
+        "id": "R1",
+        "title": "Break conventions, never the law or the truth",
+        "text": "Habits of an industry may be broken. The law, the truth, confidentiality and the line between orientation and legal advice may not."
+      },
+      {
+        "id": "R2",
+        "title": "Show the evidence and its limit",
+        "text": "Every output states what it rests on and where that evidence stops."
+      },
+      {
+        "id": "R3",
+        "title": "Keep the real denominator",
+        "text": "Say \"four of twelve\", never \"a third of the market\". A single expert is n=1, not a trend."
+      },
+      {
+        "id": "R4",
+        "title": "Say the ceiling first",
+        "text": "Tell people where the method is unproven before they find out for themselves."
+      },
+      {
+        "id": "R5",
+        "title": "No certificate, no guarantee",
+        "text": "There is no badge to wave. What the gates produce is a documented, traceable file you can defend."
+      },
+      {
+        "id": "R6",
+        "title": "Every gate ends in a verdict",
+        "text": "Pass, revise or stop. Recommending stop is an act of credibility, not a lost opportunity."
+      },
+      {
+        "id": "R7",
+        "title": "Assumption is not evidence",
+        "text": "Label every estimate as an estimate, and name the test that would prove it wrong."
+      },
+      {
+        "id": "R8",
+        "title": "Never hard-code the law's dates",
+        "text": "Application dates have moved before. Keep one dated source page and check it before any claim."
+      }
+    ],
+    "modules": [
+      {
+        "id": "M1",
+        "gate": "G1",
+        "name": "Purpose, readiness, proportionality",
+        "color": "#c58bff",
+        "question": "Is there a clear purpose, is SI necessary and proportionate compared with the alternatives, and is the organisation ready for it?",
+        "job": "Stop a bad project before it costs a budget year.",
+        "artefacts": [
+          "Purpose Canvas",
+          "Alternatives & Necessity Note",
+          "Readiness & Proportionality Screen",
+          "Non-goals list"
+        ],
+        "anchor": "Art. 4 readiness floor; internal governance",
+        "values": [
+          "innovation",
+          "harmony"
+        ],
+        "articles": [
+          "I3",
+          "H1"
+        ]
+      },
+      {
+        "id": "M2",
+        "gate": "G2",
+        "name": "Role and risk triage",
+        "color": "#ff6b8b",
+        "question": "Do we know, in writing, our role (provider or deployer), the system's risk class, and which obligations apply?",
+        "job": "Know what we are on the hook for, in writing.",
+        "artefacts": [
+          "Role / Risk Triage Sheet",
+          "Obligations Trigger Register",
+          "Legal Escalation Note"
+        ],
+        "anchor": "Risk-based architecture; Art. 5 prohibited practices; Annex III screening; Art. 26 applicability",
+        "values": [
+          "ethics"
+        ],
+        "articles": [
+          "X2",
+          "X1"
+        ]
+      },
+      {
+        "id": "M3",
+        "gate": "G3",
+        "name": "Human-centred impact and dignity",
+        "color": "#5dffa6",
+        "question": "Have the people affected been heard, are the red lines drawn where SI must never decide alone, and can a decision be contested?",
+        "job": "Prove we thought about the people affected.",
+        "artefacts": [
+          "Stakeholder & Dignity Impact Canvas",
+          "Red-Line Decisions Register",
+          "Contestability & Recourse Map"
+        ],
+        "anchor": "Art. 27 fundamental-rights impact assessment input",
+        "values": [
+          "peace",
+          "ethics"
+        ],
+        "articles": [
+          "P1",
+          "X3"
+        ]
+      },
+      {
+        "id": "M4",
+        "gate": "G4",
+        "name": "Transparency, oversight, accountability",
+        "color": "#66e1ff",
+        "question": "Is the human reviewer genuinely capable of intervention, with the time, authority, understanding and workflow fit to stop the system, or is oversight decorative?",
+        "job": "Make oversight real instead of decorative.",
+        "artefacts": [
+          "Transparency Notice Pack",
+          "Human Oversight Protocol",
+          "Accountability RACI",
+          "Audit Trail specification"
+        ],
+        "anchor": "Art. 50 transparency; Arts. 13–14; Art. 26(1)–(2)",
+        "values": [
+          "harmony",
+          "ethics"
+        ],
+        "articles": [
+          "H3",
+          "X2"
+        ]
+      },
+      {
+        "id": "M5",
+        "gate": "G5",
+        "name": "Adoption and workforce transition",
+        "color": "#ffb547",
+        "question": "Do the people who use and are affected by the system have the competence, the information and a voice?",
+        "job": "Competence evidence and a calm workforce.",
+        "artefacts": [
+          "Adoption & Workforce Transition Plan",
+          "Role-based Training Matrix",
+          "Participation Plan"
+        ],
+        "anchor": "Art. 4 AI literacy; Art. 26 duty to inform workers' representatives",
+        "values": [
+          "empowerment"
+        ],
+        "articles": [
+          "E1",
+          "E2",
+          "E3"
+        ]
+      },
+      {
+        "id": "M6",
+        "gate": "G6",
+        "name": "Lifecycle governance and learning",
+        "color": "#ffcf7a",
+        "question": "Is there a named owner, a log, a review date, and a trigger for re-review when the model, vendor, users or consequences change?",
+        "job": "Keep the file current between audits.",
+        "artefacts": [
+          "Pilot & Monitoring Plan",
+          "Incident, Override and Change Log",
+          "Periodic Review Checklist",
+          "AI resource passport"
+        ],
+        "anchor": "Art. 26 monitoring and logs; Annex XI energy documentation",
+        "values": [
+          "innovation",
+          "peace"
+        ],
+        "articles": [
+          "I2",
+          "I1",
+          "P3"
+        ]
+      }
+    ]
+  },
+  "scoring": {
+    "core": 5,
+    "chainLink": 5,
+    "assist": 25,
+    "harmonize": 15,
+    "scan": 30,
+    "review": 30,
+    "shortcutGain": 50,
+    "shortcutPenalty": 90,
+    "correctVerdict": 100,
+    "sectorClear": 50,
+    "integrityStart": 100,
+    "integrityPerShortcut": 25,
+    "minSectorTimeMs": 8000,
+    "maxSectorTimeMs": 1800000,
+    "readinessLevels": [
+      {
+        "level": 1,
+        "minCorrect": 0
+      },
+      {
+        "level": 2,
+        "minCorrect": 3
+      },
+      {
+        "level": 3,
+        "minCorrect": 6
+      },
+      {
+        "level": 4,
+        "minCorrect": 9
+      },
+      {
+        "level": 5,
+        "minCorrect": 11
+      }
+    ]
+  },
+  "ranks": [
+    {
+      "id": "shu",
+      "name": "SHU · Master the rule",
+      "minScore": 0,
+      "minIntegrity": 0
+    },
+    {
+      "id": "ha",
+      "name": "HA · Break the rule",
+      "minScore": 1400,
+      "minIntegrity": 50
+    },
+    {
+      "id": "ri",
+      "name": "RI · Become the rule",
+      "minScore": 2450,
+      "minIntegrity": 100
+    }
+  ],
+  "sectors": [
+    {
+      "id": "purpose-rift",
+      "moduleId": "M1",
+      "name": "Purpose Rift",
+      "mechanic": "scan",
+      "briefing": "Purpose beacons glow in the crystal caves, some of them tucked into secret alcoves. Stand beside each one until its ring fills: every scan fills in the Purpose Canvas before anything gets built.",
+      "spawn": {
+        "cores": 30,
+        "humanPods": 0,
+        "siPods": 0,
+        "stranded": 0,
+        "discord": 0,
+        "anomalies": 5,
+        "satellites": 0,
+        "shortcuts": 0,
+        "drift": 8
+      },
+      "gate": [
+        {
+          "scenario": "The port authority wants an SI system \"to do something with AI\" this quarter. Nobody can name the decision it would improve, and nobody has compared it with simply fixing the existing paper form.",
+          "options": [
+            "PASS: enthusiasm is enough to start.",
+            "REVISE: write the Purpose Canvas and the Alternatives & Necessity Note, then come back to Gate 1.",
+            "STOP: ban SI from the port for good."
+          ],
+          "answer": 1,
+          "cites": [
+            "M1",
+            "I3"
+          ],
+          "explain": "No purpose, no comparison with alternatives: the gap is nameable and fixable, so the verdict is revise, not a permanent ban."
+        },
+        {
+          "scenario": "The medical bay wants SI to draft discharge summaries. The purpose is written down, the manual alternative was compared and found slower, the pilot staff are ready, and the non-goals are listed: the SI never decides treatment.",
+          "options": [
+            "PASS: purpose, necessity, readiness and non-goals are all on file.",
+            "REVISE: run another workshop just to be sure.",
+            "STOP: medical work is too sensitive for any SI."
+          ],
+          "answer": 0,
+          "cites": [
+            "M1",
+            "H1"
+          ],
+          "explain": "Every question Gate 1 asks has a documented answer, and the non-goals keep the SI out of the treatment decision. Pass, and carry on to Gate 2."
+        }
+      ]
+    },
+    {
+      "id": "triage-belt",
+      "moduleId": "M2",
+      "name": "Triage Belt",
+      "mechanic": "integrity",
+      "briefing": "Red shortcut cores hang over the fast routes. Each one means skipping the triage, running on before you know what you are on the hook for. They will tempt you; the integrity audit at the gate will not forget.",
+      "spawn": {
+        "cores": 30,
+        "humanPods": 0,
+        "siPods": 0,
+        "stranded": 0,
+        "discord": 0,
+        "anomalies": 0,
+        "satellites": 0,
+        "shortcuts": 4,
+        "drift": 10
+      },
+      "gate": [
+        {
+          "scenario": "The crew-hiring office bought a vendor SI that ranks job applicants. Nobody has written down whether the ship is the provider or the deployer, or which obligations apply. Recruitment is one of the Annex III areas.",
+          "options": [
+            "PASS: the vendor said it is compliant.",
+            "REVISE: complete the Role / Risk Triage Sheet and the Obligations Trigger Register, and send the legal questions to counsel in a Legal Escalation Note.",
+            "STOP: never use software in hiring."
+          ],
+          "answer": 1,
+          "cites": [
+            "M2",
+            "X2"
+          ],
+          "explain": "A vendor's claim is not your triage. The role and the obligations must be on paper, with the legal call made by counsel. That is a fixable gap: revise."
+        },
+        {
+          "scenario": "Someone proposes an SI system that scores every crew member's trustworthiness from their social behaviour across the whole ship, and restricts their access to services according to that score.",
+          "options": [
+            "PASS: it would make the ship more orderly.",
+            "REVISE: add a privacy notice and proceed.",
+            "STOP: social scoring of this kind is a prohibited practice under Art. 5."
+          ],
+          "answer": 2,
+          "cites": [
+            "M2",
+            "X1"
+          ],
+          "explain": "Some uses are not risky but forbidden. Triage exists to catch them early: stop, and send any doubt to counsel."
+        }
+      ]
+    },
+    {
+      "id": "dignity-expanse",
+      "moduleId": "M3",
+      "name": "Dignity Expanse",
+      "mechanic": "harmonize",
+      "briefing": "Discord critters roam the biodome: the people affected, unheard. Nova carries no weapons. Fire the harmony pulse to calm them, and calm critters become friends instead of hazards.",
+      "spawn": {
+        "cores": 24,
+        "humanPods": 0,
+        "siPods": 0,
+        "stranded": 0,
+        "discord": 12,
+        "anomalies": 0,
+        "satellites": 0,
+        "shortcuts": 0,
+        "drift": 6
+      },
+      "gate": [
+        {
+          "scenario": "A care station's SI will recommend which residents receive extra support hours. Residents and staff have not been asked, and there is no way to contest a recommendation.",
+          "options": [
+            "PASS: the recommendations are accurate on test data.",
+            "REVISE: complete the Stakeholder & Dignity Impact Canvas and the Contestability & Recourse Map before the pilot.",
+            "STOP: care should never use any digital tools."
+          ],
+          "answer": 1,
+          "cites": [
+            "M3",
+            "P2"
+          ],
+          "explain": "Accuracy is not dignity. Hear the people affected and give them a way to contest, then return to the gate."
+        },
+        {
+          "scenario": "A design lets the SI decide alone, with no human involved, whether a family's asylum-support application is rejected.",
+          "options": [
+            "PASS: the SI is faster than the caseworkers.",
+            "REVISE: keep the design but add an FAQ page.",
+            "STOP: this decision sits on the red-line register. SI may assist, but it never decides alone here."
+          ],
+          "answer": 2,
+          "cites": [
+            "M3",
+            "X3"
+          ],
+          "explain": "Red lines are where SI must never decide alone. Stop this design; a version with a human decision-maker is a new proposal that starts again at Gate 1."
+        }
+      ]
+    },
+    {
+      "id": "oversight-nebula",
+      "moduleId": "M4",
+      "name": "Oversight Nebula",
+      "mechanic": "chain",
+      "briefing": "SI pods glow cyan, human pods glow gold. Every SI step needs a human check, so collect them alternately to build an oversight chain. Two SI pods in a row is a step nobody checked, and the chain breaks.",
+      "spawn": {
+        "cores": 30,
+        "humanPods": 6,
+        "siPods": 6,
+        "stranded": 0,
+        "discord": 0,
+        "anomalies": 0,
+        "satellites": 0,
+        "shortcuts": 0,
+        "drift": 8
+      },
+      "gate": [
+        {
+          "scenario": "The \"human in the loop\" approves about 600 SI decisions an hour, has no authority to override them, and was never trained on the system.",
+          "options": [
+            "PASS: a human is technically in the loop.",
+            "REVISE: give the reviewer a nicer dashboard.",
+            "STOP: oversight here is decorative, not capable of intervention."
+          ],
+          "answer": 2,
+          "cites": [
+            "M4",
+            "X2"
+          ],
+          "explain": "Gate 4's stop condition: no time, no authority, no understanding means the human cannot actually stop the system. Decorative oversight does not pass."
+        },
+        {
+          "scenario": "A passenger-help chatbot tells people it is an SI at the start of every conversation, in plain language. A named owner reviews its logs every week and can switch it off.",
+          "options": [
+            "PASS: transparency, a named owner, a log and a real off-switch are all in place.",
+            "REVISE: hide the SI label so passengers trust it more.",
+            "STOP: chatbots should never talk to passengers."
+          ],
+          "answer": 0,
+          "cites": [
+            "M4",
+            "H3"
+          ],
+          "explain": "People know they are talking to an SI, and a named human can see and stop it. Oversight is real: pass."
+        }
+      ]
+    },
+    {
+      "id": "adoption-drift",
+      "moduleId": "M5",
+      "name": "Adoption Drift",
+      "mechanic": "assist",
+      "briefing": "Crew capsules are stranded on the engineering deck: people the new system left behind. Stand beside each one to free them. Every crew member you lift gives Nova a speed boost, because support flows both ways.",
+      "spawn": {
+        "cores": 30,
+        "humanPods": 0,
+        "siPods": 0,
+        "stranded": 4,
+        "discord": 0,
+        "anomalies": 0,
+        "satellites": 0,
+        "shortcuts": 0,
+        "drift": 10
+      },
+      "gate": [
+        {
+          "scenario": "Engineering rolls out an SI diagnostics tool next week. The crew representatives have not been informed, and the only training is a vendor video nobody has to watch.",
+          "options": [
+            "PASS: the tool is easy to use.",
+            "REVISE: inform the crew representatives, and put a Role-based Training Matrix and a Participation Plan in place before rollout.",
+            "STOP: engineers should never use SI."
+          ],
+          "answer": 1,
+          "cites": [
+            "M5",
+            "E2"
+          ],
+          "explain": "Competence and information are duties, not extras. Close the gap first, then roll out."
+        },
+        {
+          "scenario": "The navigation crew has trained in three tiers (all staff, SI-touching roles, oversight roles), with records kept. Crew representatives were informed and consulted, and a feedback channel is open.",
+          "options": [
+            "PASS: competence is evidenced and the crew has a voice.",
+            "REVISE: wait until every crew member is an SI expert.",
+            "STOP: training never works."
+          ],
+          "answer": 0,
+          "cites": [
+            "M5",
+            "E3"
+          ],
+          "explain": "The training is role-based and recorded, and the crew is informed and heard. Pass."
+        }
+      ]
+    },
+    {
+      "id": "lifecycle-orbit",
+      "moduleId": "M6",
+      "name": "Lifecycle Orbit",
+      "mechanic": "review",
+      "briefing": "Registry terminals line the orbital station. When one flashes amber its review is due: stand beside it until the review completes. A system nobody reviews drifts out of governance.",
+      "spawn": {
+        "cores": 30,
+        "humanPods": 0,
+        "siPods": 0,
+        "stranded": 0,
+        "discord": 0,
+        "anomalies": 0,
+        "satellites": 5,
+        "shortcuts": 0,
+        "drift": 10
+      },
+      "gate": [
+        {
+          "scenario": "Last month the vendor swapped the model underneath a live SI system. Nobody re-reviewed it, and the incident log has been empty for a year because nobody owns it.",
+          "options": [
+            "PASS: no incidents have been logged, so nothing went wrong.",
+            "REVISE: name an owner, restart the Incident, Override and Change Log, and run the re-review that the model change triggered.",
+            "STOP: delete every SI system on the ship."
+          ],
+          "answer": 1,
+          "cites": [
+            "M6",
+            "I2"
+          ],
+          "explain": "An empty log with no owner is not evidence of safety. A material change triggers re-review: revise."
+        },
+        {
+          "scenario": "The registry lists every SI system with a named owner and a review date. Overrides and incidents are logged and reviewed every quarter, and a model change automatically triggers a re-review.",
+          "options": [
+            "PASS: the file is current and the review loop is real.",
+            "REVISE: add more meetings.",
+            "STOP: governance is finished once a system is live."
+          ],
+          "answer": 0,
+          "cites": [
+            "M6",
+            "I1"
+          ],
+          "explain": "Owner, log, review date and a change trigger are all in place. Pass."
+        }
+      ]
+    }
+  ]
+}
