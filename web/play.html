@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nova Run · HumanSI Synergy</title>
+  <meta name="description" content="Nova Run: an original side-scrolling platformer that flies the Six Gates of the HumanSI Rule Book.">
+  <meta name="theme-color" content="#04050b">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/game.css">
+  <script type="module" src="js/game/main.js"></script>
+</head>
+<body class="game" data-screen="loading">
+  <main class="stage" id="stage">
+    <h1 class="visually-hidden">Nova Run</h1>
+    <canvas id="screen" class="screen" role="img" aria-label="Nova Run: the game view. Every gate, scenario and Rule Book text is also shown in the panels on top of it and on the landing page."></canvas>
+    <p id="live" class="visually-hidden" aria-live="polite"></p>
+    <div id="hud" class="hud" hidden></div>
+    <div id="touch" class="touch" hidden></div>
+    <div id="overlay" class="overlay"></div>
+    <noscript><p class="noscript">Nova Run needs JavaScript. The Rule Book itself is readable on the <a href="index.html">landing page</a>.</p></noscript>
+  </main>
+</body>
+</html>

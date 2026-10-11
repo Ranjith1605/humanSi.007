@@ -1,7 +1,7 @@
 // A 3×5 pixel font for numbers and short words drawn inside the game world
 // (pickup pop-ups, the gate keystone). Wider letters use 5 columns.
 
-import { Pix, rgba, makeCanvas } from './paint.js';
+import { Pix, rgba } from './paint.js';
 
 const G = {
   0: ['###', '#.#', '#.#', '#.#', '###'],
@@ -94,4 +94,3 @@ export function paintText(p, s, x, y, col) {
   }
 }
 
-export { makeCanvas };

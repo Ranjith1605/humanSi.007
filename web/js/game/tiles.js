@@ -6,7 +6,7 @@
 // drawn per frame.
 
 import { T, TILE, looksSolid } from './physics.js';
-import { Pix, rgba, makeCanvas, bayer, hash2, noise, mix } from './paint.js';
+import { Pix, rgba, bayer, hash2, noise } from './paint.js';
 
 const C = (h) => rgba(h);
 
@@ -26,18 +26,50 @@ function crystalSolid(wx, wy, e) {
   }
   if (e.left === 0 || e.right === 0 || e.bottom === 0) return P.out;
   if (e.left === 1) return P.line;
-  const u = wx * 0.8 + wy * 0.6;
-  const v = -wx * 0.6 + wy * 0.8;
-  const cu = Math.floor(u / 11);
-  const cv = Math.floor(v / 8);
-  if (u - cu * 11 < 1 || v - cv * 8 < 1) return e.top > 40 ? P.base : P.line;
-  const h = hash2(cu, cv, 3);
+  // Crystal facets: a jittered Voronoi pattern, so the rock reads as
+  // fractured crystal instead of a regular grid.
+  const f = facet(wx, wy);
+  if (f.edge < 1.1) return e.top > 40 ? P.base : P.line;
   if (hash2(wx, wy, 9) < 0.005) return P.speck2;
   if (hash2(wx >> 1, wy >> 1, 5) < 0.008) return P.speck;
+  const h = f.id;
+  // A soft highlight on the upper-left of each facet.
+  const lit = f.dx + f.dy < -4;
   const deep = e.top > 30 ? 1 : 0;
-  if (h < 0.33) return deep ? P.deep : P.base;
-  if (h < 0.7) return deep ? P.base : P.mid;
+  if (h < 0.33) return deep ? P.deep : lit ? P.mid : P.base;
+  if (h < 0.7) return deep ? P.base : lit ? P.light : P.mid;
   return deep ? P.mid : P.light;
+}
+
+const FACET = 13;
+function facet(x, y) {
+  const cx = Math.floor(x / FACET);
+  const cy = Math.floor(y / FACET);
+  let d1 = 1e9;
+  let d2 = 1e9;
+  let id = 0;
+  let dx1 = 0;
+  let dy1 = 0;
+  for (let j = -1; j <= 1; j++) {
+    for (let i = -1; i <= 1; i++) {
+      const gx = cx + i;
+      const gy = cy + j;
+      const px = (gx + 0.15 + hash2(gx, gy, 201) * 0.7) * FACET;
+      const py = (gy + 0.15 + hash2(gx, gy, 202) * 0.7) * FACET;
+      const dx = x - px;
+      const dy = y - py;
+      // Stretched metric: facets lean diagonally like crystal faces.
+      const d = Math.sqrt(dx * dx * 0.8 + dy * dy * 1.2 + dx * dy * 0.6);
+      if (d < d1) {
+        d2 = d1;
+        d1 = d;
+        id = hash2(gx, gy, 203);
+        dx1 = dx;
+        dy1 = dy;
+      } else if (d < d2) d2 = d;
+    }
+  }
+  return { id, edge: d2 - d1, dx: dx1, dy: dy1 };
 }
 
 function rigsSolid(wx, wy, e) {
@@ -535,9 +567,9 @@ export function drawAnimatedTiles(ctx, lv, world, ox, oy, vw, vh, time, fx) {
       const sx = tx * TILE - ox;
       const sy = ty * TILE - oy;
       if (c === T.SPRING) {
+        // fx.springs holds the time left on a recent bounce: squash, then rebound.
         const k = fx.springs.get(ty * lv.w + tx) || 0;
-        const f = k > 0.12 ? 2 : k > 0 ? 1 : 0;
-        ctx.drawImage(springs[f === 2 ? 2 : f === 1 ? 0 : 1 - 1], sx, sy);
+        ctx.drawImage(springs[k > 0.17 ? 2 : k > 0.08 ? 1 : 0], sx, sy);
       } else if (c === T.BOOST_R || c === T.BOOST_L) {
         const fr = boosterFrames(c === T.BOOST_R ? 1 : -1);
         ctx.drawImage(fr[Math.floor(time * 16) % 8], sx, sy);
@@ -591,4 +623,3 @@ export function drawFalseWalls(ctx, lv, ox, oy) {
   }
 }
 
-export { mix };

@@ -251,8 +251,12 @@ export function makeMap(level, { secrets = true, avoidRed = false } = {}) {
     g.hoverIds = [];
     const bottom = g.lowest + 1;
     const highest = Math.max(g.top + 0.05, bottom - SIM.updraftLift);
+    // Half-tile steps from the bottom, plus the lift cap itself.
+    const heights = [];
+    for (let feet = bottom; feet > highest + EPS; feet -= 0.5) heights.push(feet);
+    heights.push(highest);
     for (const x of g.cols) {
-      for (let feet = bottom; feet >= highest - EPS; feet -= 0.5) {
+      for (const feet of heights) {
         const px = x + 0.5;
         if (map.blocked(px, feet)) continue;
         g.hoverIds.push(W * H + map.hovers.length);
@@ -373,6 +377,8 @@ export function explore(level, opts = {}) {
     if (id >= W * H) {
       const hv = map.hovers[id - W * H];
       map.cellsAt(hv.px, hv.py, mine);
+      // Holding glide rides the updraft up to its cap; letting go sinks.
+      for (const h of map.groups[hv.group].hoverIds) if (h !== id) out.add(h);
       launch(hv.px, hv.py, 0, [-1, 1], [true, false], hv.group);
       launch(hv.px, hv.py, 0, [0], [false], hv.group);
       return { out, mine };
@@ -567,6 +573,37 @@ export function perfectChainPossible(result) {
 // ---------------------------------------------------------------------------
 // Tests
 
+// The levels are only as finishable as the engine is faithful to the contract,
+// so check physics.js (read-only) while it is there: every promised number
+// within ~10%, and Nova's body no bigger than the box the search assumes.
+test('engine physics stays inside the contract the levels are built for', async (t) => {
+  let P;
+  try {
+    P = await import('./physics.js');
+  } catch {
+    t.skip('physics.js is not present');
+    return;
+  }
+  const promised = {
+    MAX_RUN: CONTRACT.runSpeed,
+    GRAVITY: CONTRACT.gravity,
+    JUMP_APEX: CONTRACT.jumpApex,
+    SHORT_HOP_APEX: CONTRACT.hopApex,
+    GLIDE_MAX_FALL: CONTRACT.glideFall,
+    SPRING_APEX: CONTRACT.springApex,
+    UPDRAFT_MAX_RISE: CONTRACT.updraftLift,
+  };
+  for (const [name, want] of Object.entries(promised)) {
+    if (typeof P[name] !== 'number') {
+      t.diagnostic(`physics.js does not export ${name}; not checked`);
+      continue;
+    }
+    assert.ok(Math.abs(P[name] - want) <= want * 0.1 + 1e-9, `${name} is ${P[name]}, the contract says ${want} (±10%)`);
+  }
+  if (typeof P.BODY_W === 'number') assert.ok(P.BODY_W <= SIM.w, `BODY_W ${P.BODY_W} is wider than the searched ${SIM.w}`);
+  if (typeof P.BODY_H === 'number') assert.ok(P.BODY_H <= SIM.h, `BODY_H ${P.BODY_H} is taller than the searched ${SIM.h}`);
+});
+
 test('one level per rule book sector, in order', () => {
   assert.equal(LEVELS.length, rulebook.sectors.length);
   LEVELS.forEach((lv, i) => {
@@ -611,7 +648,8 @@ LEVELS.forEach((level, li) => {
 
   test(`${label}: placement`, () => {
     const map = makeMap(level);
-    const { rows, ch } = { rows: level.rows, ch: map.ch };
+    const { rows } = level;
+    const { ch } = map;
     rows.forEach((r, y) => {
       for (let x = 0; x < r.length; x++) {
         const c = r[x];
@@ -627,11 +665,21 @@ LEVELS.forEach((level, li) => {
     const [gate] = findAll(rows, 'G');
     assert.equal(ch(gate.x, gate.y + 1), '#', 'the gate stands on solid ground');
     for (const k of [1, 2]) assert.equal(ch(gate.x, gate.y - k), '.', 'the gate archway needs open space above');
-    // Spikes sit on solid ground in the open, never at the lip of a landing.
+    // Spikes sit on solid ground in the open, never where a jump lands. Every
+    // floor is entered over an edge (a gap, a drop or a jump up), and a
+    // full-speed jump with the contract's numbers comes down up to ~10.6 tiles
+    // past it, so a spike sits at least SPIKE_CLEAR tiles into its floor (the
+    // levels run left to right). The map's own left edge is not a landing.
+    const SPIKE_CLEAR = 11;
     for (const s of findAll(rows, 'x')) {
       assert.equal(ch(s.x, s.y + 1), '#', `spike at ${s.x},${s.y} sits on solid ground`);
       for (const d of [-2, -1, 1, 2]) {
         assert.ok(map.standable(s.x + d, s.y), `spike at ${s.x},${s.y} needs walkable floor two tiles either side`);
+      }
+      let start = s.x;
+      while (start - 1 >= 0 && (map.standable(start - 1, s.y) || ch(start - 1, s.y) === 'x')) start--;
+      if (start > 0) {
+        assert.ok(s.x - start >= SPIKE_CLEAR, `spike at ${s.x},${s.y} is only ${s.x - start} tiles past the edge at x=${start}: a full-speed landing`);
       }
     }
     // Glitch-bots patrol a real platform and leave room to jump over them.
@@ -660,7 +708,10 @@ LEVELS.forEach((level, li) => {
     // limit) and room for the three-tile platform.
     for (const p of map.platforms) {
       const at = `${p.kind} at ${p.x},${p.y}`;
-      assert.ok(p.reachA >= 1 && p.reachB >= 1, `${at} has no room to travel`);
+      // A horizontal platform is three tiles wide around its marker, so it
+      // needs a free tile on each side; a lift may start at either end.
+      if (p.kind === 'm') assert.ok(p.reachA >= 1 && p.reachB >= 1, `${at} has no room for its three tiles`);
+      else assert.ok(p.reachA + p.reachB >= 2, `${at} has no room to travel`);
       const limit = p.kind === 'm' ? 8 : 6;
       assert.ok(SOLID.includes(p.endA) || p.reachA === limit, `${at}: track must end at a solid tile, found '${p.endA}'`);
       assert.ok(SOLID.includes(p.endB) || p.reachB === limit || (p.kind === 'v' && p.b === rows.length - 1),

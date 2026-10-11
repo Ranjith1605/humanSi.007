@@ -79,7 +79,7 @@ function paintNova(o) {
   const ry = 8.6 + (o.ry || 0);
 
   // Far flipper and thruster pack sit behind the body.
-  if (o.far !== undefined) flipper(p, cx + 1.5, cy - 1.5, o.far, 6, N.bodyD, 0);
+  if (o.far !== undefined) flipper(p, cx + 1.5, cy - 1.5, o.far, o.farLen || 6, N.bodyD, N.body);
   p.rect(Math.round(cx - 10), Math.round(cy - 5), 4, 10, N.pack);
   p.rect(Math.round(cx - 10), Math.round(cy - 5), 1, 10, N.packD);
   p.rect(Math.round(cx - 9), Math.round(cy - 5), 2, 1, N.packL);
@@ -164,7 +164,7 @@ function paintNova(o) {
   p.rect(bx, by + 1, 2, 1, N.beakD);
 
   // Near flipper.
-  flipper(p, cx - 0.5, cy - 1, o.near, 6.5, N.bodyD, N.bodyL);
+  flipper(p, cx - 0.5, cy - 1, o.near, o.nearLen || 6.5, N.bodyD, N.bodyL);
 
   // Antenna with a gold tip.
   const ax = Math.round(cx - 2);
@@ -207,8 +207,9 @@ function novaPose(name, i) {
     case 'fall':
       return { feet: [[13, 29.6], [19, 29.8]], near: 2.7 + (i ? 0.25 : 0), far: 2.25, dy: -1, ant: 1 };
     case 'glide': {
-      const flap = [-0.35, 0, 0.35, 0][i];
-      return { feet: [[14, 28.6], [17.5, 28.2]], near: 1.75 + flap, far: 1.55 - flap, flame: [3, 2, 4, 2][i], dy: -1, ant: -2, lean: 1 };
+      // Flippers raised in a V and beating while the thruster flutters.
+      const flap = [-0.25, 0, 0.25, 0][i];
+      return { feet: [[14, 28.6], [17.5, 28.2]], near: 2.3 + flap, far: -2.3 - flap, nearLen: 8.5, farLen: 8.5, flame: [3, 2, 4, 2][i], dy: -1, ant: -2, lean: 1 };
     }
     case 'hurt':
       return { feet: [[12.5, 29.6], [19.5, 29.2]], near: i ? 2.9 : 2.5, far: i ? -0.6 : -0.3, hurt: true, dx: i ? -1 : 0, lean: -2 };
@@ -300,7 +301,7 @@ export function gemFrames(pal) {
     const frames = [];
     for (let f = 0; f < 6; f++) {
       const a = (f / 6) * Math.PI;
-      const hw = 4.6 * Math.abs(Math.cos(a)) + 0.6;
+      const hw = 4.2 * Math.abs(Math.cos(a)) + 1.2;
       const front = Math.cos(a) >= 0;
       const p = new Pix(12, 13);
       const cx = 6;

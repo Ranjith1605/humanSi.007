@@ -1,0 +1,13 @@
+# Only the Go sources and web/ are needed to build the image.
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
+data/
+*.corrupt-*
+docs/
+scripts/
+testdata/
+**/*_test.go
+*.md
