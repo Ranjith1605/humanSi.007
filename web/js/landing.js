@@ -184,7 +184,7 @@ function modeBadge(mode) {
   if (!badge) return;
   badge.dataset.mode = mode;
   badge.querySelector('.mode__text').textContent =
-    mode === 'fleet' ? 'Fleet server · shared board' : 'Solo · scores stay on this device';
+    mode === 'fleet' ? 'Fleet server' : 'Solo · scores stay on this device';
 }
 
 // ------------------------------------------------------------- sections --
@@ -206,6 +206,15 @@ function renderHero(rb) {
 
 function renderTeaser(rb, modules) {
   bind('minLevel', String(rb.method.minimumRule.level));
+  // The navigator portrait is generated media; if it is missing, drop the
+  // figure rather than show a broken image. The copy stands on its own.
+  const comms = document.querySelector('.teaser__comms');
+  const portraitImg = comms && comms.querySelector('img');
+  if (portraitImg) {
+    const drop = () => { comms.hidden = true; };
+    if (portraitImg.complete && portraitImg.naturalWidth === 0 && portraitImg.currentSrc) drop();
+    else portraitImg.addEventListener('error', drop, { once: true });
+  }
   document.getElementById('worlds').replaceChildren(
     ...rb.sectors.map((s) => {
       const m = modules.get(s.moduleId);
@@ -304,8 +313,8 @@ function renderGates(rb, articles) {
 
 function renderStages(rb) {
   const stages = rb.method.stages;
-  // "SHU", "HA", "RI" in the data; the heading reads them as one phrase.
-  bind('stagesTitle', stages.map((s) => s.name.charAt(0) + s.name.slice(1).toLowerCase()).join(' · '));
+  // "SHU", "HA", "RI" in the data; the heading reads them as one word, Shu-Ha-Ri.
+  bind('stagesTitle', stages.map((s) => s.name.charAt(0) + s.name.slice(1).toLowerCase()).join('-'));
   reveal(document.querySelector('#shu-ha-ri .section__head'));
   document.getElementById('stages').replaceChildren(
     ...stages.map((s) => reveal(h('li', { class: 'stage' },

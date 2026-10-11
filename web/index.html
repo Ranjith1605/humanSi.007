@@ -70,9 +70,12 @@
         <a class="btn btn--primary" href="play.html">Play Nova Run</a>
         <a class="btn btn--ghost" href="#charter">Read the Rule Book</a>
       </div>
+      <!-- The badge comes after the link in source order so that, without
+           JavaScript, its reserved (invisible) space trails instead of
+           indenting the link; CSS moves it first once the mode is known. -->
       <p class="hero__meta">
-        <span class="mode" id="mode-badge" data-mode="pending"><span class="mode__dot" aria-hidden="true"></span><span class="mode__text"></span></span>
         <a class="hero__hangar" href="hangar.html"><span data-bind="hangar">Model Hangar</span> <span aria-hidden="true">→</span></a>
+        <span class="mode" id="mode-badge" data-mode="pending"><span class="mode__dot" aria-hidden="true"></span><span class="mode__text"></span></span>
       </p>
     </div>
     <span class="hero__cue" aria-hidden="true"></span>

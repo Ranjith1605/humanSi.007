@@ -30,6 +30,10 @@ a:hover { color: #a9efff; }
 
 img, video { max-width: 100%; }
 
+/* js/landing.js shows and hides parts with the hidden attribute; a component's
+   own display rule must never win over it. */
+[hidden] { display: none !important; }
+
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 .skip {
@@ -454,6 +458,7 @@ p { margin: 0 0 1em; }
   color: var(--text-dim);
 }
 .mode[data-mode='pending'] { visibility: hidden; }
+.mode:not([data-mode='pending']) { order: -1; }
 .mode__dot {
   width: 7px;
   height: 7px;
@@ -1071,6 +1076,8 @@ p { margin: 0 0 1em; }
 .rule {
   display: grid;
   grid-template-columns: 40px 1fr;
+  /* Rules in one row share a height; keep title and text together at the top. */
+  align-content: start;
   gap: 4px 12px;
   padding: 18px 0;
   border-top: 1px solid rgba(159, 176, 211, 0.12);
@@ -1086,8 +1093,25 @@ p { margin: 0 0 1em; }
 /* ------------------------------------------------------------ vision -- */
 
 .vision {
+  position: relative;
+  isolation: isolate;
   text-align: center;
   padding-bottom: 0;
+}
+/* The closing scene borrows the hero's skylight: a faint warm pool of light
+   over the vision. Inset within the section, so it never widens the page. */
+.vision::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: min(820px, 100%);
+  /* Centred on the headline and faded out well inside the box on every
+     side, so no edge of the layer ever shows. */
+  background:
+    radial-gradient(ellipse 46% 44% at 50% 42%, rgba(255, 207, 122, 0.10), transparent 75%),
+    radial-gradient(ellipse 22% 30% at 50% 36%, rgba(255, 236, 200, 0.06), transparent 75%);
+  pointer-events: none;
 }
 .vision__headline {
   max-width: 36ch;

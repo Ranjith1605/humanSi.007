@@ -11,13 +11,17 @@
 #   web/assets/img/briefing-poster-16x9.webp, .jpg   1280x720  frame 0 of briefing-16x9
 #   web/assets/img/briefing-poster-9x16.webp, .jpg   720x1280  frame 0 of briefing-9x16
 #   web/assets/video/briefing-16x9.webm (VP9), .mp4 (H.264)
-#                                                    1280x720, 30 fps, 14 s seamless loop, no audio:
-#                                                    a 16:9 window travelling down the portrait image
-#                                                    from the skylight past the captain and penguin to
-#                                                    the table, then easing back up (a ping-pong move,
-#                                                    so the loop point is a still moment, not a cut)
-#   web/assets/video/briefing-9x16.webm, .mp4        720x1280 portrait version: nearly the full width,
-#                                                    the same descent as a slow push-in
+#                                                    1280x720, 30 fps, 14 s (420 frames) seamless loop,
+#                                                    no audio: a full-width 16:9 window travelling down
+#                                                    the portrait image from the skylight past the
+#                                                    captain and penguin, settling on the table with
+#                                                    the chalice and food, then easing back up. A
+#                                                    ping-pong move with a short hold at each end, so
+#                                                    the loop point sits inside the skylight hold: a
+#                                                    still moment, not a cut
+#   web/assets/video/briefing-9x16.webm, .mp4        720x1280 portrait version: opens on the widest
+#                                                    9:16 window (675 px of the 896, the full height)
+#                                                    and descends as a slow push-in to the table
 #   web/assets/img/comms-captain.webp                256x256   the captain's face with the visor
 #   web/assets/img/comms-navigator.webp              256x256   the penguin's head and chest
 #
@@ -41,8 +45,9 @@
 # Usage:   scripts/build-media.sh          (from any directory; it works in the repo root)
 # Needs:   bash, ffmpeg + ffprobe with libvpx-vp9, libx264 and ffv1;
 #          python3 with Pillow and NumPy (Debian/Ubuntu: python3-pil python3-numpy).
-# Time:    a few minutes on a 4-core laptop. Temporary files (~1 GB) go to
-#          ${TMPDIR:-/tmp} and are removed on exit, success or failure.
+# Time:    about 4-5 minutes on 4 cores. Temporary files (under 0.5 GB, mostly
+#          the lossless master of one video at a time) go to ${TMPDIR:-/tmp}
+#          and are removed on exit, success or failure.
 #
 # Idempotent: the render is deterministic (fixed seeds), encoder thread counts
 # are pinned and the muxers run bitexact with metadata stripped, so running it

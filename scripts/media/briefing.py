@@ -33,14 +33,24 @@ from PIL import Image, ImageFilter
 FPS = 30            # 30, not 24: it maps 2:2 onto 60 Hz screens, so the pan has no pulldown judder
 SECONDS = 14
 FRAMES = FPS * SECONDS
+# Fraction of each half of the loop the camera holds still at either end of
+# its move (0.05 of 7 s, so about 0.7 s in total at the table and the same at
+# the skylight, plus the ease on each side). The hold at the table is the
+# "settle"; the hold at the skylight means the video opens on a still frame
+# that matches its poster before the camera starts to move.
+DWELL = 0.05
 
 SRC_W, SRC_H = 896, 1200
 
 # Where things are in the original (source pixels), read off the image itself.
 SKYLIGHT = (445.0, 40.0)        # centre of the skylight opening at the top
 HALO = (406.0, 268.0, 98.0)     # holographic halo around the captain's head: cx, cy, radius
-CAPTAIN_FACE = (410, 290, 164)  # comms crop: cx, cy, side (hair, visor and beard)
-NAVIGATOR = (517, 488, 152)     # comms crop: the penguin's head and chest
+# Comms crops: cx, cy, side. The captain's head runs from the top of the hair
+# (y 222) to the beard (y 345), the visor spans x 372-462. The penguin's crest
+# starts at y 432, its beak tip is at x 548 and its body spans x 455-560; it
+# sits a little left of centre so the beak has room to look into.
+CAPTAIN_FACE = (412, 289, 156)  # hair, visor and beard, a sliver of halo
+NAVIGATOR = (510, 494, 150)     # the penguin's head and chest, the captain's hand under it
 
 # Camera keyframes per shape. The window keeps the output aspect; "sky" is the
 # opening frame under the skylight, "table" the frame the move settles on.
@@ -57,13 +67,16 @@ SHAPES = {
         'seed': 1609,
         'tiles': 2,         # log2 VP9 tile columns: 4 tiles across 1280 px
     },
-    # Portrait: nearly the full width; descends from the skylight (top edge
-    # pinned) to a slightly closer frame whose bottom edge rests on the floor.
+    # Portrait: opens on the widest 9:16 window the image allows (675 px, the
+    # full height, so the skylight sits at the top of the frame) and descends
+    # as a push-in to a closer frame whose bottom edge rests on the floor, the
+    # table in its lower half. A smaller sideways arc than landscape: on a
+    # narrow phone frame a wide sway would read as the main move.
     '9x16': {
         'size': (720, 1280),
-        'sky': (448.0, 640.0, 'top', 0.0),
-        'table': (444.0, 600.0, 'bottom', float(SRC_H)),
-        'drift': 0.6,
+        'sky': (448.0, SRC_H * 720 / 1280, 'top', 0.0),
+        'table': (444.0, 576.0, 'bottom', float(SRC_H)),
+        'drift': 0.25,
         'seed': 916,
         'tiles': 1,         # 2 tiles across 720 px
     },
@@ -78,16 +91,18 @@ def die(msg):
 # ---------------------------------------------------------------- timing ---
 
 def travel(u):
-    """Ping-pong 0 -> 1 -> 0 over one loop (u in [0, 1)).
+    """Ping-pong 0 -> 1 -> 0 over one loop (u in [0, 1)), holding at both ends.
 
     Smootherstep has zero velocity *and* zero acceleration at both ends, so the
-    camera eases out of the skylight hold, settles on the table, and eases back.
-    Because the move returns to where it started, the loop point is just another
-    still moment: there is nothing to jump.
+    camera eases out of the skylight hold, settles on the table, and eases back,
+    and joins the holds without a bump. Because the move returns to where it
+    started, the loop point falls inside the skylight hold: there is nothing
+    to jump.
     """
     x = (u % 1.0) * 2.0
     if x > 1.0:
         x = 2.0 - x
+    x = min(max((x - DWELL) / (1.0 - 2.0 * DWELL), 0.0), 1.0)
     return x * x * x * (x * (6.0 * x - 15.0) + 10.0)
 
 
