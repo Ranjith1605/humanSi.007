@@ -59,11 +59,17 @@ func (s *Server) copilotChat(w http.ResponseWriter, r *http.Request) {
 		writeRateLimited(w, wait, "Too many console requests from this address. Try again in %d s.")
 		return
 	}
-	claims, err := s.cfg.Signer.Verify(bearerToken(r))
+	token := bearerToken(r)
+	claims, err := s.cfg.Signer.Verify(token)
 	if err != nil {
 		msg := "Clear the Six Gates on the fleet server to open the console."
-		if errors.Is(err, clearance.ErrExpired) {
+		switch {
+		case errors.Is(err, clearance.ErrExpired):
 			msg = "Your launch clearance has expired. Fly the Six Gates again to renew it."
+		case token != "":
+			// Altered, or signed by an earlier run of a server without
+			// HUMANSI_SECRET: either way the pilot's next step is the same.
+			msg = "This launch clearance is not valid on this server. Fly the Six Gates again to renew it."
 		}
 		writeError(w, http.StatusUnauthorized, "no_clearance", msg, "")
 		return

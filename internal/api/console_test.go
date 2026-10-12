@@ -464,3 +464,25 @@ func TestCopilotStreamTimeout(t *testing.T) {
 		t.Errorf("%d %s", r.status, r.body)
 	}
 }
+
+// TestCopilotClearanceMessages: each kind of 401 tells the pilot what happened.
+func TestCopilotClearanceMessages(t *testing.T) {
+	h, _ := consoleHarness(t, func(c *Config) { c.Limits.CopilotBurst = 1000 })
+	expired := h.token("entry-old")
+	h.clock.Advance(25 * time.Hour)
+	cases := []struct{ name, auth, want string }{
+		{"missing", "", "Clear the Six Gates"},
+		{"altered or from an earlier server run", "Bearer nope.nope", "not valid on this server"},
+		{"expired", "Bearer " + expired, "has expired"},
+	}
+	for _, tc := range cases {
+		hd := map[string]string{"Content-Type": "application/json"}
+		if tc.auth != "" {
+			hd["Authorization"] = tc.auth
+		}
+		m := checkError(t, h.do("POST", "/api/copilot", askBody, hd), http.StatusUnauthorized, "no_clearance")
+		if msg, _ := m["message"].(string); !strings.Contains(msg, tc.want) {
+			t.Errorf("%s: message %q, want it to mention %q", tc.name, msg, tc.want)
+		}
+	}
+}

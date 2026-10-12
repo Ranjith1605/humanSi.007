@@ -464,7 +464,8 @@ export class UI {
         link.replaceChildren(h('a', { class: 'btn btn--primary btn--big btn--gold', href: 'hangar.html' }, 'Clearance granted → Model Hangar'));
         if (res.mode === 'solo') link.append(h('p', { class: 'hint', text: 'Solo mode: clearance is a record on this device.' }));
       } else {
-        status.textContent = res?.error ? `Clearance not recorded: ${res.error.message}. You can retry from the debrief.` : 'Clearance not recorded.';
+        // Server messages end with their own full stop; do not add a second one.
+        status.textContent = res?.error ? `Clearance not recorded: ${String(res.error.message).replace(/[.\s]+$/, '')}. You can retry from the debrief.` : 'Clearance not recorded.';
       }
     });
   }
@@ -564,10 +565,21 @@ export class UI {
       if (res.error) {
         const retry = h('button', { class: 'btn', type: 'button', text: 'Retry submission' });
         const wait = res.error.retryAfterSec;
-        subLine.append(h('p', { class: 'error-line' }, `Not submitted: ${res.error.message}`, wait ? ` (try again in ${wait} s)` : ''));
+        // The server's rate-limit message already names the wait, so the
+        // countdown lives on the button rather than being said twice.
+        subLine.append(h('p', { class: 'error-line', text: `Not submitted: ${res.error.message}` }));
         if (wait) {
+          let left = Math.ceil(wait);
           retry.disabled = true;
-          setTimeout(() => { retry.disabled = false; }, wait * 1000);
+          retry.textContent = `Retry in ${left} s`;
+          const tick = setInterval(() => {
+            left--;
+            if (!retry.isConnected || left <= 0) {
+              clearInterval(tick);
+              retry.disabled = false;
+              retry.textContent = 'Retry submission';
+            } else retry.textContent = `Retry in ${left} s`;
+          }, 1000);
         }
         retry.addEventListener('click', async () => {
           subLine.replaceChildren(h('p', { text: 'Submitting…' }));

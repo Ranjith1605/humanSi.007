@@ -490,6 +490,16 @@ func TestEmbeddedSiteServes(t *testing.T) {
 			t.Errorf("/: %d", r.status)
 		}
 	}
+	// web/api/health is the static-host marker ({"status":"solo"}); on the
+	// fleet server the real route must answer instead, or every browser
+	// would think it is in solo mode.
+	if _, err := fs.Stat(embeddedSite(t), "api/health"); err != nil {
+		t.Errorf("web/api/health marker missing: %v", err)
+	}
+	r := h.get("/api/health")
+	if m := r.json(t); r.status != 200 || m["status"] != "ok" {
+		t.Errorf("/api/health with the marker embedded: %d %s", r.status, r.body)
+	}
 }
 
 func TestPanicRecovery(t *testing.T) {
