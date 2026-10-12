@@ -96,7 +96,7 @@ function setStatus(clearance) {
   const text = $('bay-status-text');
   if (!clearance) {
     el.dataset.tone = 'locked';
-    text.textContent = 'Sealed';
+    text.textContent = 'Sealed · no launch clearance on this device';
     return;
   }
   el.dataset.tone = 'open';
@@ -536,7 +536,9 @@ function renderChat(models, { focus = false } = {}) {
   const form = h('form', { class: 'composer', 'aria-label': 'Ask the SI console' },
     h('label', { class: 'visually-hidden', for: 'si-prompt', text: 'Your question for the SI console' }),
     input,
-    h('div', { class: 'composer__row' }, clear, h('div', { class: 'composer__go' }, send, stop)),
+    // Send and Stop come first in tab order, straight after the question;
+    // the CSS puts "New conversation" on the left on wide screens.
+    h('div', { class: 'composer__row' }, h('div', { class: 'composer__go' }, send, stop), clear),
   );
 
   form.addEventListener('submit', (e) => {
@@ -569,7 +571,7 @@ function renderChat(models, { focus = false } = {}) {
     ),
     log,
     form,
-    h('p', { class: 'chat__fine', text: 'Stop, or Esc while an answer streams, is the human override: it ends the answer on the server as well. Only the last 12 messages are sent as context, and they live in this tab alone; dimmed ones have dropped out. The server logs the model, duration and token count, never the text.' }),
+    h('p', { class: 'chat__fine', text: 'Stop, or Esc while an answer streams, is the human override: it ends the answer on the server as well. The console remembers at most the last 12 messages, in this tab only; dimmed ones are no longer sent. The server logs the model, duration and token count, never the text.' }),
   );
 
   // Rebuilding the console (after "Check again") keeps the conversation.
@@ -636,12 +638,24 @@ function stopAnswer() {
   if (chat.controller) chat.controller.abort();
 }
 
-/** Commit a finished exchange to the context, dropping (and dimming) the oldest beyond 12. */
-function commit(userMsg, answer, siEl) {
-  const all = [...chat.history, userMsg, { role: 'assistant', content: clip(answer), el: siEl }];
-  const kept = all.slice(-MAX_HISTORY);
-  for (const m of all.slice(0, all.length - kept.length)) m.el?.classList.add('is-forgotten');
-  chat.history = kept;
+/**
+ * The context the next request carries: the newest messages, 12 at most,
+ * always starting with a pilot message so the model never opens on an
+ * answer to a question it cannot see. Whatever falls out is dimmed now,
+ * at the moment it stops being sent, so the transcript never shows a
+ * message as remembered when it is not.
+ */
+function contextWith(userMsg) {
+  let ctx = [...chat.history, userMsg].slice(-MAX_HISTORY);
+  while (ctx.length > 1 && ctx[0].role !== 'user') ctx = ctx.slice(1);
+  for (const m of chat.history) if (!ctx.includes(m)) m.el?.classList.add('is-forgotten');
+  chat.history = chat.history.filter((m) => ctx.includes(m));
+  return ctx;
+}
+
+/** Commit a finished exchange. ctx ends with the pilot's message, so it is at most 11 long and this stays within 12. */
+function commit(ctx, answer, siEl) {
+  chat.history = [...ctx, { role: 'assistant', content: clip(answer), el: siEl }].slice(-MAX_HISTORY);
 }
 
 async function ask(raw) {
@@ -655,7 +669,7 @@ async function ask(raw) {
   const userEl = pilotMessage(text);
   els.log.append(userEl);
   const userMsg = { role: 'user', content: text, el: userEl };
-  const outgoing = [...chat.history, userMsg].slice(-MAX_HISTORY);
+  const outgoing = contextWith(userMsg);
   const si = siMessage(model);
   els.log.append(si.el);
   scrollLog(true);
@@ -692,10 +706,12 @@ async function ask(raw) {
   }
   setStreaming(false);
 
+  // An unanswered question is not kept: the next request must alternate
+  // pilot / SI, and the server rejects empty answers as context anyway.
   const said = answer.trim().length > 0;
   if (result.ok) {
     if (said) {
-      commit(userMsg, answer, si.el);
+      commit(outgoing, answer, si.el);
     } else {
       si.el.append(note('The model returned no text.'));
       userEl.classList.add('is-forgotten');
@@ -705,14 +721,14 @@ async function ask(raw) {
   } else if (result.error === 'stopped') {
     si.el.classList.add('is-stopped');
     si.el.append(note('Stopped by the pilot · human override'));
-    if (said) commit(userMsg, answer, si.el);
+    if (said) commit(outgoing, answer, si.el);
     else userEl.classList.add('is-forgotten');
     setChatState('stopped', 'Stopped by the pilot');
-    announce('Answer stopped.');
+    announce('Answer stopped by the pilot.');
   } else {
     if (said) {
       si.el.append(note('Interrupted'));
-      commit(userMsg, answer, si.el);
+      commit(outgoing, answer, si.el);
     } else {
       si.el.remove();
       userEl.classList.add('is-forgotten');
@@ -724,7 +740,15 @@ async function ask(raw) {
 
 function showError(r) {
   const els = chat.els;
-  const noClearance = r.error === 'no_clearance';
+  // 401 from the console means the server no longer accepts this clearance:
+  // it expired (24 h), or the server restarted with a new signing key.
+  const noClearance = r.error === 'no_clearance' || r.error === 'http_401';
+  if (noClearance) {
+    r = { ...r, message: r.message && r.error === 'no_clearance' ? r.message : 'Your launch clearance is no longer valid. Fly the Six Gates again to renew it.' };
+    const status = $('bay-status');
+    status.dataset.tone = 'locked';
+    $('bay-status-text').textContent = 'Clearance expired or invalid · fly again to renew it';
+  }
   const actions = [];
   if (noClearance) {
     actions.push(h('a', { class: 'btn btn--primary btn--small', href: 'play.html', text: 'Fly the Six Gates again' }));
@@ -746,6 +770,8 @@ function showError(r) {
     els.input.disabled = true;
     els.send.disabled = true;
     els.select.disabled = true;
+    // "New conversation" would reset the state line to Ready over a dead line.
+    els.clear.disabled = true;
     els.input.placeholder = 'Fly the Six Gates again to renew your clearance';
   } else {
     setChatState('error', 'Error');

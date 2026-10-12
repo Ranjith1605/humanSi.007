@@ -47,10 +47,14 @@ main:focus,
   color: var(--void);
   font-weight: 600;
   border-radius: var(--radius-s);
+  /* Invisible as well as off screen: a translate alone still paints it above
+     the viewport, where full-page captures and some zoom levels show it. */
+  opacity: 0;
+  pointer-events: none;
   transform: translateY(-160%);
-  transition: transform 0.2s var(--ease-out);
+  transition: transform 0.2s var(--ease-out), opacity 0.2s;
 }
-.skip:focus { transform: none; color: var(--void); }
+.skip:focus { opacity: 1; pointer-events: auto; transform: none; color: var(--void); }
 
 /* ------------------------------------------------------------ type -- */
 
@@ -230,7 +234,9 @@ main:focus,
 
 .bay__scene {
   position: relative;
-  height: clamp(320px, min(62vh, 96vw), 640px);
+  /* Short enough that the locked call to action stays above the fold on a
+     1280×800 laptop (measured), tall enough for the door to feel big. */
+  height: clamp(300px, min(54vh, 96vw), 600px);
   overflow: hidden;
   background: radial-gradient(ellipse 80% 70% at 50% 40%, #0e1428 0%, var(--hull-950) 60%, var(--void) 100%);
 }
@@ -953,7 +959,7 @@ main:focus,
   color: var(--text);
   overflow-wrap: anywhere;
 }
-.runtime-link { display: inline-block; margin-top: 14px; font-size: 0.9375rem; }
+.runtime-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 6px; font-size: 0.9375rem; }
 
 .cmds {
   list-style: none;
@@ -1147,15 +1153,30 @@ main:focus,
 }
 .composer textarea::placeholder { color: var(--faint); }
 .composer textarea:disabled { opacity: 0.55; }
+/* Send and Stop are first in the DOM (tab order follows the question);
+   row-reverse shows them on the right with "New conversation" on the left. */
 .composer__row {
   display: flex;
+  flex-direction: row-reverse;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
-.composer__go { display: flex; flex-wrap: wrap; gap: 10px; margin-left: auto; }
+.composer__go { display: flex; flex-wrap: wrap; gap: 10px; }
 .composer__go .btn { min-width: 108px; }
+
+/* On a phone the row cannot hold all three: Send and Stop take the full
+   width as two big targets (Stop is the human override, it must be easy to
+   hit), and "New conversation" goes quietly underneath. */
+@media (max-width: 520px) {
+  .composer__row { flex-direction: column; align-items: stretch; }
+  /* A grid, not flex: flex-basis 0 still reserves each button's border, so
+     the bordered Stop came out 2 px wider than Send (measured). */
+  .composer__go { display: grid; grid-template-columns: 1fr 1fr; }
+  .composer__go .btn { min-width: 0; }
+  .composer__row > .btn--quiet { align-self: flex-start; }
+}
 
 .chat__fine {
   margin: 4px 0 0;

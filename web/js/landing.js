@@ -56,6 +56,31 @@ function onMediaChange(mq, fn) {
 // Scroll reveal is opt-in from here: without JavaScript, without
 // IntersectionObserver or with reduced motion nothing is ever hidden.
 let revealer = null;
+const pending = new Set();
+let sweepQueued = false;
+
+function show(el) {
+  el.classList.add('is-in');
+  pending.delete(el);
+  if (revealer) revealer.unobserve(el);
+}
+
+// IntersectionObserver only reports what it sees in a rendered frame. A fast
+// fling, the End key or a jump link can carry an element from below the
+// viewport to above it between two frames; it would then stay invisible
+// until scrolled back to. Anything already scrolled past is shown at once.
+function sweep() {
+  sweepQueued = false;
+  for (const el of pending) {
+    if (el.getBoundingClientRect().bottom <= 0) show(el);
+  }
+}
+
+function queueSweep() {
+  if (sweepQueued || pending.size === 0) return;
+  sweepQueued = true;
+  requestAnimationFrame(sweep);
+}
 
 function armReveal() {
   if (reduceMotion.matches || !('IntersectionObserver' in window)) return;
@@ -63,19 +88,22 @@ function armReveal() {
   // card still sliding in would land the scroll a few pixels off.
   if (location.hash.length > 1) return;
   revealer = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      e.target.classList.add('is-in');
-      revealer.unobserve(e.target);
-    }
+    for (const e of entries) if (e.isIntersecting) show(e.target);
   }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
   document.documentElement.classList.add('reveal-on');
+  window.addEventListener('scroll', queueSweep, { passive: true });
+  // Keyboard focus never waits for a card to fade in.
+  document.addEventListener('focusin', (e) => {
+    const host = e.target instanceof Element ? e.target.closest('.reveal') : null;
+    if (host && pending.has(host)) show(host);
+  });
   onMediaChange(reduceMotion, () => { if (reduceMotion.matches) revealAll(); });
   window.addEventListener('beforeprint', revealAll);
 }
 
 function revealAll() {
   for (const el of document.querySelectorAll('.reveal')) el.classList.add('is-in');
+  pending.clear();
   if (revealer) revealer.disconnect();
   revealer = null;
 }
@@ -83,6 +111,7 @@ function revealAll() {
 function reveal(el) {
   if (revealer && el) {
     el.classList.add('reveal');
+    pending.add(el);
     revealer.observe(el);
   }
   return el;
@@ -127,6 +156,7 @@ function heroVideo() {
   const apply = () => {
     const want = portrait.matches ? '9x16' : '16x9';
     video.poster = `assets/img/briefing-poster-${want}.webp`;
+    video.autoplay = allowed();
     if (!allowed()) {
       // Reduced motion: the poster only, nothing loads, nothing autoplays.
       if (variant) {
@@ -519,6 +549,8 @@ async function main() {
   renderVision(rb);
   renderFooter(rb);
   for (const id of SECTIONS) document.getElementById(id).hidden = false;
+  // A reload can restore a scroll position below content that just appeared.
+  queueSweep();
 
   getModels().then((cat) => {
     if (typeof cat.title === 'string' && cat.title) bind('hangar', cat.title);

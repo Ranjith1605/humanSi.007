@@ -516,8 +516,8 @@ p { margin: 0 0 1em; }
 }
 
 .noscript {
-  max-width: 720px;
-  margin: 48px auto 0;
+  /* At most 720px wide, never closer than the gutter to the screen edge. */
+  margin: 48px max(var(--gutter), calc((100% - 720px) / 2)) 0;
   padding: 20px 24px;
   background: var(--glass-strong);
   border: 1px solid var(--edge);
@@ -1218,7 +1218,9 @@ p { margin: 0 0 1em; }
 
 @media (min-width: 820px) {
   .run {
-    grid-template-columns: 48px minmax(0, 1.4fr) minmax(0, 2fr) auto;
+    /* Each row is its own grid: a fixed floor under the score column keeps
+       the columns of every row aligned whatever the score's width. */
+    grid-template-columns: 48px minmax(0, 1.4fr) minmax(0, 2fr) minmax(7ch, auto);
     grid-template-areas: 'place who meta score';
     align-items: center;
     padding: 16px 8px;

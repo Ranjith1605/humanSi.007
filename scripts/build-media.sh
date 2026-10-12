@@ -34,8 +34,13 @@
 # VP9 two-pass constant quality (crf 37, -b:v 0, row-mt); H.264 High profile,
 # crf 27, preset slow, yuv420p, +faststart. Colour is converted to BT.709
 # limited range and tagged as such, which is how browsers decode HD video, so
-# the video matches its sRGB poster. Each video must stay at or under 3 MiB;
-# the script fails if one does not.
+# the video matches its sRGB poster.
+#
+# Checks: after encoding, every video is read back with ffprobe and ffmpeg, and
+# the script fails unless each one has the right codec, size and 30 fps, all
+# 420 frames, a 14 s duration, no audio track, at most 3 MiB, and a loop seam
+# (mean absolute difference between its last and first decoded frame) of at
+# most 8 on the 0-255 scale.
 #
 # How the frames are made: scripts/media/briefing.py renders every frame with
 # Pillow + NumPy (sub-pixel camera, light layers, grain) into a lossless FFV1
@@ -135,16 +140,40 @@ for shape in 16x9 9x16; do
   rm -f "$master" "$TMP/poster-$shape.png" "$TMP"/vp9-"$shape"*
 done
 
+# Read back what was written, not what was asked for: codec, size, frame rate,
+# frame count, duration, no audio, the byte budget, and the loop seam. The seam
+# is the mean absolute difference (0-255) between the last and the first
+# decoded frame; it should be about what film grain alone gives between two
+# frames of a still shot (2-4), far below a cut (tens). The middle of the move
+# measures about 9-12 between neighbouring frames, for scale.
 echo "checks"
+MAX_SEAM=8
+probe() { ffprobe -v error -select_streams v:0 -show_entries "stream=$2" -of default=nw=1:nk=1 "$1"; }
 fail=0
-for f in "$VID"/briefing-16x9.webm "$VID"/briefing-16x9.mp4 "$VID"/briefing-9x16.webm "$VID"/briefing-9x16.mp4; do
-  bytes=$(stat -c %s "$f")
-  info=$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate \
-           -show_entries format=duration -of default=nw=1:nk=1 "$f" | paste -sd' ')
-  audio=$(ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$f")
-  printf '  %-34s %s  %9s bytes\n' "$f" "$info" "$bytes"
-  [ -z "$audio" ] || { echo "  ^ has an audio track" >&2; fail=1; }
-  [ "$bytes" -le "$MAX_VIDEO_BYTES" ] || { echo "  ^ over the 3 MiB budget" >&2; fail=1; }
+for shape in 16x9 9x16; do
+  read -r width height fps frames tiles < <(python3 "$PY" info "$shape")
+  for ext in webm mp4; do
+    f="$VID/briefing-$shape.$ext"
+    want_codec=vp9; [ "$ext" = mp4 ] && want_codec=h264
+    bytes=$(stat -c %s "$f")
+    got="$(probe "$f" codec_name) $(probe "$f" width)x$(probe "$f" height) $(probe "$f" r_frame_rate)"
+    count=$(ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 "$f")
+    dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f")
+    audio=$(ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$f")
+    "${FF[@]}" -i "$f" -frames:v 1 "$TMP/first.png"
+    "${FF[@]}" -i "$f" -vf "select=eq(n\,$((frames - 1)))" -fps_mode passthrough -frames:v 1 "$TMP/last.png"
+    seam=$(python3 "$PY" diff "$TMP/first.png" "$TMP/last.png")
+    printf '  %-34s %s  %s frames  %ss  seam %s  %9s bytes\n' "$f" "$got" "$count" "$dur" "$seam" "$bytes"
+    [ "$got" = "$want_codec ${width}x${height} $fps/1" ] || { echo "  ^ expected $want_codec ${width}x${height} $fps/1" >&2; fail=1; }
+    [ "$count" -eq "$frames" ] || { echo "  ^ expected $frames frames" >&2; fail=1; }
+    awk -v d="$dur" -v want="$((frames / fps))" 'BEGIN { exit !(d > want - 0.05 && d < want + 0.05) }' \
+      || { echo "  ^ expected a $((frames / fps)) s duration" >&2; fail=1; }
+    [ -z "$audio" ] || { echo "  ^ has an audio track" >&2; fail=1; }
+    [ "$bytes" -le "$MAX_VIDEO_BYTES" ] || { echo "  ^ over the 3 MiB budget" >&2; fail=1; }
+    awk -v s="$seam" -v m="$MAX_SEAM" 'BEGIN { exit !(s <= m) }' \
+      || { echo "  ^ the loop seam is visible (over $MAX_SEAM)" >&2; fail=1; }
+    rm -f "$TMP/first.png" "$TMP/last.png"
+  done
 done
 [ "$fail" -eq 0 ] || die "video checks failed"
 echo "done"
