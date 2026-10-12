@@ -27,7 +27,12 @@ async function fetchJSON(path, opts = {}, timeoutMs = 4000) {
   }
 }
 
-/** Probe for the server once; every later call reuses the answer. */
+/**
+ * Probe for the server once; every later call reuses the answer. On a
+ * static host the request finds web/api/health, a marker file that says
+ * {"status":"solo"}, so the probe gets a clean answer instead of a 404 in
+ * the console. The fleet server's own /api/health route always wins there.
+ */
 export async function connect({ timeoutMs = 2500 } = {}) {
   if (state.mode) return { mode: state.mode, version: state.version, copilot: state.copilot };
   try {
@@ -102,6 +107,16 @@ export function getClearance() {
 
 function saveClearance(c) {
   try { localStorage.setItem(CLEARANCE_KEY, JSON.stringify(c)); } catch { /* best effort */ }
+}
+
+/**
+ * Forget this browser's clearance. askCopilot calls it when the server
+ * answers 401 (the token expired, was altered, or was signed by an earlier
+ * server run), so a reload shows the hangar sealed instead of a console
+ * that can only fail.
+ */
+export function clearClearance() {
+  try { localStorage.removeItem(CLEARANCE_KEY); } catch { /* best effort */ }
 }
 
 /**
@@ -220,12 +235,13 @@ export async function askCopilot({ model, messages, signal, onToken }) {
       body: JSON.stringify({ model, messages }),
       signal,
     });
-  } catch (e) {
+  } catch {
     if (signal?.aborted) return { ok: false, error: 'stopped', message: 'Stopped by the pilot.' };
     return { ok: false, error: 'network', message: 'The console could not reach the server.' };
   }
   if (!res.ok || !res.body) {
     const b = await res.json().catch(() => ({}));
+    if (res.status === 401) clearClearance();
     return { ok: false, error: b.error ?? `http_${res.status}`, message: b.message ?? `console refused (${res.status})` };
   }
   // Server-sent events over a POST response: parse "event:"/"data:" blocks by hand.

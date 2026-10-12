@@ -1,0 +1,16 @@
+name: Level idea
+description: Suggest a level, a mechanic or a part of Synergy City
+labels: [level-idea]
+body:
+  - type: dropdown
+    id: gate
+    attributes:
+      label: Which gate does it teach?
+      options: [G1 Purpose, G2 Triage, G3 Dignity, G4 Oversight, G5 Adoption, G6 Lifecycle, Not tied to a gate]
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What the player does, and how it acts out the gate. A text sketch of the layout helps.
+    validations:
+      required: true

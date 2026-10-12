@@ -1,0 +1,21 @@
+name: Bug
+description: Something in the game, the site or the server doesn't work
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where?
+      description: The page or level (e.g. "Nova Run, G3 Dignity Expanse"), and solo or fleet mode.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: e.g. Chrome 130 on macOS, Safari on iPhone

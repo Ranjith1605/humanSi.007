@@ -1,0 +1,12 @@
+# Fleet server runtime data and the built binary
+/data/
+*.corrupt-*
+/humansi
+
+# Python bytecode from the media scripts
+__pycache__/
+*.pyc
+
+# OS and editor clutter
+.DS_Store
+*.swp

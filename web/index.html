@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HumanSI Synergy · The Rule Book and Nova Run</title>
+  <meta name="description" content="HumanSI Synergy: a Rule Book for humans and Super Intelligence. Read the Charter and the Six Gates, then fly them in Nova Run, an original platformer.">
+  <meta name="theme-color" content="#04050b">
+  <meta name="color-scheme" content="dark">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HumanSI Synergy">
+  <meta property="og:title" content="HumanSI Synergy">
+  <meta property="og:description" content="A Rule Book for humans and Super Intelligence: the Charter, the Six Gates, and Nova Run, an original platformer that plays them.">
+  <meta property="og:image" content="assets/img/briefing-poster-16x9.jpg">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="og:image:alt" content="The crew of the ISV Synergy in the briefing room, gathered under the skylight.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- An inline SVG ring, so the browser does not ask for a favicon.ico that does not exist. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%2366e1ff' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <!-- The poster is the first thing anyone sees: fetch the one this orientation will use early. -->
+  <link rel="preload" as="image" href="assets/img/briefing-poster-16x9.webp" type="image/webp" media="(orientation: landscape)" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/briefing-poster-9x16.webp" type="image/webp" media="(orientation: portrait)" fetchpriority="high">
+  <script type="module" src="js/landing.js"></script>
+</head>
+<body class="landing">
+  <a class="skip" href="#main">Skip to the Rule Book</a>
+
+  <header class="topbar" id="topbar">
+    <a class="topbar__mark" href="#top">HumanSI</a>
+    <nav class="topbar__nav" aria-label="Sections">
+      <a href="#nova-run">Nova Run</a>
+      <a href="#charter">Charter</a>
+      <a href="#gates">Six Gates</a>
+      <a href="#crew">Crew</a>
+      <a href="#board">Board</a>
+    </nav>
+    <a class="topbar__play" href="play.html">Play</a>
+  </header>
+
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="hero__media" aria-hidden="true">
+      <!-- The poster is the floor: it shows without JavaScript, with reduced
+           motion, on save-data, and while the video loads or if it fails. -->
+      <picture class="hero__poster">
+        <source media="(orientation: portrait)" srcset="assets/img/briefing-poster-9x16.webp" type="image/webp" width="720" height="1280">
+        <source media="(orientation: portrait)" srcset="assets/img/briefing-poster-9x16.jpg" width="720" height="1280">
+        <source srcset="assets/img/briefing-poster-16x9.webp" type="image/webp" width="1280" height="720">
+        <img src="assets/img/briefing-poster-16x9.jpg" alt="" width="1280" height="720" decoding="async" fetchpriority="high">
+      </picture>
+      <!-- Sources are chosen by orientation in js/landing.js. -->
+      <video class="hero__video" muted loop playsinline preload="none" disablepictureinpicture disableremoteplayback></video>
+      <div class="hero__rays"></div>
+      <div class="hero__motes"></div>
+      <div class="hero__scrim"></div>
+    </div>
+
+    <div class="hero__content">
+      <p class="eyebrow hero__eyebrow" data-bind="ship"></p>
+      <h1 class="hero__title" id="hero-title" data-bind="title">HumanSI Synergy</h1>
+      <p class="hero__subtitle" data-bind="subtitle"></p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="play.html">Play Nova Run</a>
+        <a class="btn btn--ghost" href="#charter">Read the Rule Book</a>
+      </div>
+      <!-- The badge comes after the link in source order so that, without
+           JavaScript, its reserved (invisible) space trails instead of
+           indenting the link; CSS moves it first once the mode is known. -->
+      <p class="hero__meta">
+        <a class="hero__hangar" href="hangar.html"><span data-bind="hangar">Model Hangar</span> <span aria-hidden="true">→</span></a>
+        <span class="mode" id="mode-badge" data-mode="pending"><span class="mode__dot" aria-hidden="true"></span><span class="mode__text"></span></span>
+      </p>
+    </div>
+    <span class="hero__cue" aria-hidden="true"></span>
+  </section>
+
+  <main id="main" tabindex="-1">
+    <noscript>
+      <div class="noscript">
+        <p>This page builds the Rule Book from data with JavaScript, and the game needs it too.</p>
+        <p>The full Rule Book, including its disclaimer, is readable as plain data in <a href="data/rulebook.json">data/rulebook.json</a>.</p>
+      </div>
+    </noscript>
+    <p class="load-state" id="load-state" role="status" hidden></p>
+
+    <!-- ============================================================ Nova Run -->
+    <section class="section teaser" id="nova-run" aria-labelledby="teaser-title" hidden>
+      <div class="teaser__panel">
+        <figure class="teaser__comms">
+          <img src="assets/img/comms-navigator.webp" alt="Nova, the ship's penguin navigator, on the comms screen" width="256" height="256" loading="lazy" decoding="async">
+          <figcaption class="mono">Nova · navigator</figcaption>
+        </figure>
+        <div class="teaser__body">
+          <p class="eyebrow">The game</p>
+          <h2 class="section__title" id="teaser-title">Nova Run</h2>
+          <p class="lede">An original, fast platformer. Run the Six Gates as Nova, the ship's penguin navigator: jump, glide and dash through one world per gate, then give your verdicts at its archway.</p>
+          <p class="teaser__goal">Clear all six at readiness Level <span data-bind="minLevel"></span> or above to earn launch clearance for the <a href="hangar.html" data-bind="hangar">Model Hangar</a><span data-bind="hangarCount"></span>.</p>
+          <ol class="worlds" id="worlds" aria-label="The six worlds"></ol>
+          <div class="teaser__actions">
+            <a class="btn btn--primary" href="play.html">Play Nova Run</a>
+            <span class="teaser__controls mono">Keyboard, gamepad or touch</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ Charter -->
+    <section class="section charter" id="charter" aria-labelledby="charter-title" hidden>
+      <header class="section__head">
+        <p class="eyebrow">Part I · Why</p>
+        <h2 class="section__title" id="charter-title">The Charter</h2>
+      </header>
+      <div class="mission">
+        <h3 class="label">Mission</h3>
+        <p class="mission__headline" data-bind="missionHeadline"></p>
+        <p class="mission__body" data-bind="missionBody"></p>
+      </div>
+      <h3 class="label values__label">Core values</h3>
+      <ol class="values" id="values"></ol>
+    </section>
+
+    <!-- ============================================================ Six Gates -->
+    <section class="section gates" id="gates" aria-labelledby="gates-title" hidden>
+      <header class="section__head">
+        <p class="eyebrow">Part II · How</p>
+        <h2 class="section__title" id="gates-title" data-bind="methodName"></h2>
+      </header>
+      <div class="gates__intro">
+        <p class="lede" data-bind="methodSummary"></p>
+        <p data-bind="methodGeneralisation"></p>
+      </div>
+      <h3 class="label">Every gate ends in a verdict</h3>
+      <ul class="verdicts" id="verdicts"></ul>
+      <ol class="gate-list" id="gate-list"></ol>
+      <div class="gates__rules">
+        <div class="triggers">
+          <h3 class="label">When to walk the gates</h3>
+          <ol class="triggers__list" id="triggers"></ol>
+        </div>
+        <div class="minimum">
+          <h3 class="label">Minimum rule</h3>
+          <p class="minimum__level"><span class="minimum__word">Level</span> <span data-bind="minLevel"></span></p>
+          <p class="minimum__text" data-bind="minRule"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ Shu-Ha-Ri -->
+    <section class="section stages" id="shu-ha-ri" aria-labelledby="stages-title" hidden>
+      <header class="section__head">
+        <p class="eyebrow">Mastery</p>
+        <h2 class="section__title" id="stages-title" data-bind="stagesTitle"></h2>
+      </header>
+      <ol class="stage-list" id="stages"></ol>
+    </section>
+
+    <!-- ============================================================ Crew -->
+    <section class="section crew" id="crew" aria-labelledby="crew-title" hidden>
+      <header class="section__head">
+        <p class="eyebrow">Crew roles</p>
+        <h2 class="section__title" id="crew-title">Every role has a seat at the table</h2>
+      </header>
+      <div class="crew__stage">
+        <ul class="crew__roles crew__roles--a" id="roles-a"></ul>
+        <figure class="crew__figure">
+          <picture>
+            <source srcset="assets/img/crew-briefing.webp" type="image/webp">
+            <img src="assets/img/crew-briefing.jpg" alt="Illustration: the crew of the ISV Synergy around the briefing-room table, the captain under the skylight holding the ship's penguin navigator." width="896" height="1200" loading="lazy" decoding="async">
+          </picture>
+          <figcaption>The roles sit around the illustration; they are not assigned to anyone pictured.</figcaption>
+        </figure>
+        <ul class="crew__roles crew__roles--b" id="roles-b"></ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ Integrity -->
+    <section class="section integrity" id="integrity" aria-labelledby="integrity-title" hidden>
+      <header class="section__head">
+        <p class="eyebrow">Evidence discipline</p>
+        <h2 class="section__title" id="integrity-title">Integrity rules</h2>
+      </header>
+      <ol class="rules" id="rules"></ol>
+    </section>
+
+    <!-- ============================================================ Vision + oath -->
+    <section class="section vision" id="vision" aria-labelledby="vision-title" hidden>
+      <p class="eyebrow">Vision</p>
+      <h2 class="vision__headline" id="vision-title" data-bind="visionHeadline"></h2>
+      <p class="vision__body" data-bind="visionBody"></p>
+      <div class="oath">
+        <p class="oath__headline" data-bind="oathHeadline"></p>
+        <p class="oath__body" data-bind="oathBody"></p>
+      </div>
+      <div class="vision__actions">
+        <a class="btn btn--primary" href="play.html">Play Nova Run</a>
+        <a class="btn btn--ghost" href="hangar.html" data-bind="hangar">Model Hangar</a>
+      </div>
+    </section>
+
+    <!-- ============================================================ Fleet board -->
+    <section class="section board" id="board" aria-labelledby="board-title" hidden>
+      <div class="board__panel">
+        <header class="board__head">
+          <div>
+            <p class="eyebrow" id="board-eyebrow"></p>
+            <h2 class="section__title" id="board-title">Fleet board</h2>
+          </div>
+          <p class="board__mode" id="board-mode"></p>
+        </header>
+        <ol class="board__list" id="board-list" aria-labelledby="board-title"></ol>
+        <p class="board__empty" id="board-empty" hidden></p>
+        <p class="board__total mono" id="board-total" hidden></p>
+        <div class="board__feed-wrap" id="feed-wrap" hidden>
+          <h3 class="label">Latest landings</h3>
+          <ul class="board__feed" id="feed" aria-live="polite"></ul>
+        </div>
+        <a class="btn btn--primary board__cta" href="play.html">Play Nova Run</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__disclaimer" id="disclaimer" hidden></p>
+      <nav class="footer__links" aria-label="More">
+        <a href="play.html">Play Nova Run</a>
+        <a href="hangar.html" data-bind="hangar">Model Hangar</a>
+        <a href="data/rulebook.json">Rule Book data (JSON)</a>
+        <a href="https://github.com/Ranjith1605/humanSi.007" rel="noopener">GitHub repository</a>
+      </nav>
+      <p class="footer__mark mono">HumanSI Synergy<span data-bind="shipSuffix"></span></p>
+    </div>
+  </footer>
+</body>
+</html>

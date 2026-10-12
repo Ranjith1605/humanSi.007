@@ -104,6 +104,118 @@ models you can run yourself. On the fleet server, clearance also opens the
 console: a local open-source model that answers from the Rule Book, labelled as
 SI, with a human stop button.
 
+## Play
+
+**[ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/)**
+redirects into `web/`, where the landing page, Nova Run and the Model Hangar
+live. On GitHub Pages the site runs in **solo mode**: the same game and the same
+scoring, with your runs kept in your own browser. The shared fleet board and
+the SI console need the fleet server (next section).
+
+To play from a clone, serve `web/` as static files:
+
+```bash
+python3 -m http.server --directory web 8000    # then open http://localhost:8000/
+```
+
+| Action | Keyboard | Gamepad | Touch |
+|--------|----------|---------|-------|
+| Move | ← → or A D | left stick or D-pad | ◀ ▶ |
+| Jump (hold for height) | Space, Z, K, W or ↑ | A | Jump |
+| Glide | press jump again in the air and hold | A, again and hold | Jump, again and hold |
+| Harmony pulse | X, J or Enter | X or B | Pulse |
+| Drop through / look down | ↓ or S | stick or D-pad down | ▼ |
+| Pause | P or Esc | Start | the II button |
+| Mute | M | | the Sound button on the pause screen |
+
+The touch buttons appear only on touch devices. Menus, briefings and gate
+verdicts (keys 1, 2, 3) work with the keyboard alone.
+
+## Run the fleet server
+
+The fleet server is one Go binary, standard library only, with the whole site
+embedded. It re-scores every run, keeps the shared board with a live feed,
+signs launch clearances and relays the SI console to a local model.
+
+```bash
+go run ./cmd/humansi                     # http://localhost:8080
+```
+
+| Flag | Environment | Default | What it sets |
+|------|-------------|---------|--------------|
+| `-addr` | `HUMANSI_ADDR` | `:8080` | listen address |
+| `-data` | `HUMANSI_DATA_DIR` | `./data` | directory for `leaderboard.json` (best 500 runs) |
+| `-ollama` | `HUMANSI_OLLAMA_URL` | empty: console off | Ollama base URL, e.g. `http://localhost:11434` |
+| `-trust-proxy` | `HUMANSI_TRUST_PROXY` | `false` | take the client address from `X-Forwarded-For` (rightmost entry); turn on only behind a proxy you run |
+| | `HUMANSI_SECRET` | a random key per start | signs launch clearances; without it, clearances stop working whenever the server restarts |
+| `-version` | | | print the version and exit |
+
+Flags win over environment variables. The secret is read from the environment
+only, so it never shows up in a process list; use a long random value.
+
+With Docker (the image holds only the static binary):
+
+```bash
+docker build -t humansi .
+docker run -p 8080:8080 -v humansi-data:/data -e HUMANSI_SECRET=... humansi
+# Ollama on the host (Docker Desktop): add -e HUMANSI_OLLAMA_URL=http://host.docker.internal:11434
+```
+
+## Connect an open-source model
+
+The SI console in the Model Hangar talks to a model on your own machine through
+[Ollama](https://ollama.com). From [`models.json`](web/data/models.json):
+
+1. Install Ollama from ollama.com and start it (it listens on http://localhost:11434).
+2. Pull a model from the hangar, e.g. `ollama pull qwen2.5:0.5b`.
+3. Start the HumanSI server with `HUMANSI_OLLAMA_URL=http://localhost:11434 go run ./cmd/humansi`.
+4. Fly the Six Gates, earn clearance, and open the console.
+
+The console opens only with a **launch clearance from that server**: clear all
+six gates at readiness Level 3 or higher while playing on it. The clearance is
+a signed token that lasts 24 hours. A clearance earned in solo mode unlocks the
+catalog view only. The model picker lists only hangar models that are actually
+installed in Ollama. Every answer is labelled SI-generated, and Stop (or Esc)
+ends the generation on the server too.
+
+## Repository map
+
+```
+web/            the whole site: landing page, Nova Run, Model Hangar, Rule Book data, media
+cmd/humansi/    the fleet server's entry point: flags, wiring, graceful shutdown
+internal/       server packages: rulebook, game (scoring mirror), leaderboard, clearance, copilot, api
+testdata/       the scoring fixture shared by the Go and JavaScript tests
+scripts/        the media pipeline and the asset-reference check
+docs/           architecture and roadmap
+.github/        CI workflow, issue and pull request templates
+embed.go        embeds web/ in the server binary
+Dockerfile      two-stage build of a static server image
+index.html      GitHub Pages redirect into web/ (with .nojekyll)
+```
+
+## Development
+
+```bash
+test -z "$(gofmt -l .)" && go vet ./... && go test -race ./...       # server
+node --test web/js/scoring.test.mjs web/js/game/levels.test.mjs      # scoring + level checks
+node scripts/check-assets.mjs                                        # every local link, import and asset resolves
+```
+
+CI runs exactly these on every push and pull request. Scoring lives in
+[`web/js/scoring.js`](web/js/scoring.js) and `internal/game` mirrors it; after a
+scoring or Rule Book change, rebuild the shared fixture with
+`node web/js/scoring.test.mjs --regenerate`, review the diff, and make both test
+suites pass. `play.html?debug=1` exposes `window.__humansi` for test bots, and
+`&timescale=N` (1–8) speeds up the simulation.
+
+`scripts/build-media.sh` regenerates every briefing image and video from the
+original artwork. It needs ffmpeg and Python 3 with Pillow and NumPy, and it
+checks its own output.
+
+More: [architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md),
+[contributing](CONTRIBUTING.md), [licence](LICENSE) and [what the licence
+covers](NOTICE.md).
+
 ## Status
 
 This repository is being built in the open. The current state:
@@ -114,10 +226,14 @@ This repository is being built in the open. The current state:
 | Scoring rules ([`scoring.js`](web/js/scoring.js)) and API client ([`api.js`](web/js/api.js)) | ✅ in the repo |
 | Model Hangar catalog ([`models.json`](web/data/models.json)) | ✅ in the repo |
 | Architecture ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)) | ✅ in the repo |
-| Nova Run (the game) | 🛠 being built |
-| Fleet server (Go), landing page, Model Hangar page | 🛠 being built |
-
-How to play and how to run the server will be added here as each part lands.
+| Nova Run (the game): six levels, one per gate | ✅ built: full runs through all six gates, scored and submitted, checked in solo and fleet mode |
+| Landing page | ✅ built |
+| Fleet server (Go): server scoring, shared board, live feed, launch clearance | ✅ built and checked end to end with the site |
+| Model Hangar page and SI console | ✅ built; the console is tested against a stand-in for Ollama, not yet against a real model |
+| Briefing video and images ([`build-media.sh`](scripts/build-media.sh)) | ✅ built; the WebM videos are checked in a browser, the H.264 fallback is not yet |
+| CI ([`ci.yml`](.github/workflows/ci.yml)) | 🛠 in the repo; every check passes locally, first GitHub run pending |
+| GitHub Pages | 🛠 Pages already builds this repo from `main`; the root redirect and `.nojekyll` (checked under `/humanSi.007/` locally) make the game live once this lands on `main` |
+| Docker image | 🛠 [`Dockerfile`](Dockerfile) in the repo, not yet built and run |
 
 ## Credits
 
