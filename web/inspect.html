@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>The Glass Box — HumanSI Synergy</title>
+    <meta
+      name="description"
+      content="Reverse-engineer an SI decision before you sign off on it. A teaching puzzle from HumanSI Synergy: you cannot oversee a decision you cannot inspect."
+    />
+    <meta name="theme-color" content="#05060f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/inspect.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the puzzle</a>
+
+    <header class="topbar">
+      <a class="topbar__brand" href="index.html">HumanSI <span>Synergy</span></a>
+      <nav class="topbar__nav" aria-label="Primary">
+        <a href="play.html">Nova Run</a>
+        <a href="inspect.html" aria-current="page">The Glass Box</a>
+        <a href="hangar.html">Model Hangar</a>
+      </nav>
+    </header>
+
+    <main id="main" class="wrap">
+      <noscript>
+        <p class="notice">
+          The Glass Box needs JavaScript. The cases it is built from are in
+          <a href="data/glassbox.json">data/glassbox.json</a>, and the Rule Book it teaches is on the
+          <a href="index.html">home page</a>.
+        </p>
+      </noscript>
+
+      <section id="intro" class="panel intro" hidden>
+        <p class="eyebrow" data-bind="tagline"></p>
+        <h1 data-bind="title"></h1>
+        <p class="lead" data-bind="intro"></p>
+        <ol class="howto" data-bind="howto"></ol>
+        <p class="gate-note">
+          This is Gate&nbsp;4 made playable — <em data-bind="g4"></em>
+        </p>
+        <div class="row">
+          <button class="btn btn--primary" type="button" data-action="start">Open the first box</button>
+          <a class="btn btn--ghost" href="play.html">Play Nova Run instead</a>
+        </div>
+        <p class="disclaimer" data-bind="disclaimer"></p>
+      </section>
+
+      <section id="case" class="panel case" hidden aria-live="polite">
+        <div class="case__head">
+          <div>
+            <p class="eyebrow">
+              Case <span data-bind="caseIndex"></span> / <span data-bind="caseTotal"></span> ·
+              <span data-bind="system"></span>
+            </p>
+            <h2 class="decision">
+              Decision: <span class="decision__value" data-bind="decision"></span>
+            </h2>
+            <p class="subject">on <span data-bind="subject"></span></p>
+          </div>
+          <div class="case__meter">
+            <p class="probe-count">
+              Probes left: <span data-bind="probesLeft"></span> / <span data-bind="probeBudget"></span>
+            </p>
+            <p class="insight-count">Insight: <span data-bind="insight"></span></p>
+          </div>
+        </div>
+
+        <p class="briefing" data-bind="briefing"></p>
+
+        <p class="instruction" data-bind="phaseHint"></p>
+
+        <ul class="factors" data-bind="factors" aria-label="Factors the system used"></ul>
+
+        <div class="verdicts" data-bind="verdicts" hidden>
+          <p class="verdicts__q">Name the deciding factor above, then give your verdict:</p>
+          <div class="verdicts__row" role="group" aria-label="Verdict"></div>
+        </div>
+
+        <div class="feedback" data-bind="feedback" hidden></div>
+
+        <div class="row case__nav">
+          <button class="btn btn--ghost" type="button" data-action="restart" hidden>Start over</button>
+          <button class="btn btn--primary" type="button" data-action="next" hidden>Next case →</button>
+        </div>
+      </section>
+
+      <section id="debrief" class="panel debrief" hidden aria-live="polite">
+        <p class="eyebrow">Debrief</p>
+        <h2 data-bind="debriefTitle"></h2>
+        <p class="lead" data-bind="debriefRank"></p>
+        <table class="debrief__table">
+          <thead>
+            <tr><th scope="col">Case</th><th scope="col">Factor</th><th scope="col">Verdict</th><th scope="col">Insight</th></tr>
+          </thead>
+          <tbody data-bind="debriefRows"></tbody>
+        </table>
+        <p class="debrief__best" data-bind="debriefBest"></p>
+        <div class="row">
+          <button class="btn btn--primary" type="button" data-action="again">Inspect again</button>
+          <a class="btn btn--ghost" href="play.html">Play Nova Run</a>
+          <a class="btn btn--ghost" href="index.html#gates">Read Gate 4</a>
+        </div>
+      </section>
+
+      <p id="loaderror" class="notice" hidden></p>
+    </main>
+
+    <footer class="foot">
+      <p data-bind="disclaimerFoot"></p>
+      <p>
+        <a href="index.html">Home</a> · <a href="play.html">Nova Run</a> ·
+        <a href="hangar.html">Model Hangar</a> ·
+        <a href="https://github.com/Ranjith1605/humanSi.007">Source</a>
+      </p>
+    </footer>
+
+    <script type="module" src="js/glassbox/main.js"></script>
+  </body>
+</html>

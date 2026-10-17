@@ -104,6 +104,14 @@ models you can run yourself. On the fleet server, clearance also opens the
 console: a local open-source model that answers from the Rule Book, labelled as
 SI, with a human stop button.
 
+**The Glass Box** is a slower, second mode — Gate 4 made playable. An SI system
+has made a decision about a person; you are the human overseer. You probe the
+factors it used, reverse-engineer the one that actually tipped the call, then
+rule pass, revise or stop. The whole puzzle is one lesson: *you cannot oversee a
+decision you cannot inspect.* Some boxes are glass, some are sealed, and some
+look clean until you find the proxy. It runs entirely in the browser, offline,
+and keeps no score anywhere but your own device.
+
 ## Play
 
 **[ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/)**
@@ -130,6 +138,10 @@ python3 -m http.server --directory web 8000    # then open http://localhost:8000
 
 The touch buttons appear only on touch devices. Menus, briefings and gate
 verdicts (keys 1, 2, 3) work with the keyboard alone.
+
+**The Glass Box** is at `/inspect.html` (linked from the landing page). It is
+point-and-click: probe a factor, name the deciding one, give a verdict. No
+install, no server, nothing stored beyond your best score on your own device.
 
 ## Run the fleet server
 
@@ -181,7 +193,7 @@ ends the generation on the server too.
 ## Repository map
 
 ```
-web/            the whole site: landing page, Nova Run, Model Hangar, Rule Book data, media
+web/            the whole site: landing page, Nova Run, the Glass Box, Model Hangar, Rule Book data, media
 cmd/humansi/    the fleet server's entry point: flags, wiring, graceful shutdown
 internal/       server packages: rulebook, game (scoring mirror), leaderboard, clearance, copilot, api
 testdata/       the scoring fixture shared by the Go and JavaScript tests
@@ -197,7 +209,8 @@ index.html      GitHub Pages redirect into web/ (with .nojekyll)
 
 ```bash
 test -z "$(gofmt -l .)" && go vet ./... && go test -race ./...       # server
-node --test web/js/scoring.test.mjs web/js/game/levels.test.mjs      # scoring + level checks
+node --test web/js/scoring.test.mjs web/js/game/levels.test.mjs \
+  web/js/glassbox/glassbox.test.mjs                                  # scoring, level and Glass Box checks
 node scripts/check-assets.mjs                                        # every local link, import and asset resolves
 ```
 
@@ -227,6 +240,7 @@ This repository is being built in the open. The current state:
 | Model Hangar catalog ([`models.json`](web/data/models.json)) | ✅ in the repo |
 | Architecture ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)) | ✅ in the repo |
 | Nova Run (the game): six levels, one per gate | ✅ built: full runs through all six gates, scored and submitted, checked in solo and fleet mode |
+| The Glass Box: the Gate-4 inspection puzzle | ✅ built: five cases, full run checked in a browser at desktop and phone width |
 | Landing page | ✅ built |
 | Fleet server (Go): server scoring, shared board, live feed, launch clearance | ✅ built and checked end to end with the site |
 | Model Hangar page and SI console | ✅ built; the console is tested against a stand-in for Ollama, not yet against a real model |

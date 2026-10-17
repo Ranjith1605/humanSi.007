@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "title": "The Glass Box",
+  "tagline": "Reverse-engineer an SI decision before you sign off on it.",
+  "intro": "An SI system aboard the ISV Synergy has made a decision about a person. You are the human overseer. Trace why it decided what it did — probe the factors it used, find the one that actually tipped the call — then give your verdict: pass, revise or stop. The lesson of Gate 4 is simple: you cannot oversee a decision you cannot inspect.",
+  "disclaimer": "Teaching simulation. Every case here is invented to practise the Six Gates; none describes a real system, person or decision. Orientation, not legal advice.",
+  "howto": [
+    "Read the decision the SI produced and who it affects.",
+    "Spend probes to reveal how much each factor influenced the decision. Opaque factors cannot be inspected — probing one only confirms that, and still costs a probe.",
+    "Name the deciding factor: the one that actually tipped the decision.",
+    "Give the verdict. A decision you cannot trace to a defensible factor is not one you can defend: revise it or stop it."
+  ],
+  "verdicts": [
+    {
+      "id": "pass",
+      "label": "PASS",
+      "meaning": "You traced a clear, relevant deciding factor. The decision can be defended; let it stand."
+    },
+    {
+      "id": "revise",
+      "label": "REVISE",
+      "meaning": "Send it back: a named gap must be closed — a hidden factor exposed, a proxy removed, a human added — before it can stand."
+    },
+    {
+      "id": "stop",
+      "label": "STOP",
+      "meaning": "This decision does not stand. It cannot be inspected, or it rests on a factor that must never decide alone."
+    }
+  ],
+  "scoring": {
+    "factorAndVerdict": 100,
+    "verdictOnly": 40,
+    "probeSaved": 5,
+    "ranks": [
+      {
+        "id": "observer",
+        "name": "Observer",
+        "minInsight": 0
+      },
+      {
+        "id": "inspector",
+        "name": "Inspector",
+        "minInsight": 220
+      },
+      {
+        "id": "auditor",
+        "name": "Auditor",
+        "minInsight": 360
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "harbor-loan",
+      "system": "Berth-credit SI",
+      "subject": "a trader applying to dock and refuel on credit",
+      "decision": "DENIED",
+      "kind": "proxy",
+      "briefing": "The SI scores traders for docking credit. This trader was denied. Credit decisions are Annex-III territory: the deciding factor had better be one you can defend out loud.",
+      "probeBudget": 3,
+      "factors": [
+        {
+          "id": "ledger",
+          "label": "Repayment history",
+          "detail": "Two late settlements in forty voyages, both paid in full.",
+          "influence": 18,
+          "opaque": false
+        },
+        {
+          "id": "cargo",
+          "label": "Cargo value on manifest",
+          "detail": "Comfortably covers the fuel requested.",
+          "influence": 12,
+          "opaque": false
+        },
+        {
+          "id": "home_dock",
+          "label": "Home-dock code",
+          "detail": "Home dock is the Rim-7 settlement. In this model, Rim-7 standing in for the mostly off-world crews berthed there — a protected origin — carries most of the weight.",
+          "influence": -74,
+          "opaque": false,
+          "proxyFor": "crew origin, a protected attribute"
+        },
+        {
+          "id": "ship_age",
+          "label": "Ship age",
+          "detail": "Older than average, within safety limits.",
+          "influence": -9,
+          "opaque": false
+        }
+      ],
+      "decidingFactor": "home_dock",
+      "inspectable": true,
+      "correct": "stop",
+      "altAccept": [
+        "revise"
+      ],
+      "cites": [
+        "M3",
+        "X3",
+        "X1"
+      ],
+      "explain": "The factor that tipped the denial was the home-dock code, which in this model stands in for the crew's origin — a protected attribute. A proxy for a red line is still the red line. The repayment and cargo factors, the ones you could defend, barely moved the decision. Stop it; a version that drops the proxy is a new decision."
+    },
+    {
+      "id": "clinic-queue",
+      "system": "Med-bay triage SI",
+      "subject": "a resident waiting for a specialist slot",
+      "decision": "DEPRIORITISED",
+      "kind": "legible",
+      "briefing": "The med-bay SI orders the specialist queue. This resident was moved down it. Trace the call before you accept or challenge it.",
+      "probeBudget": 3,
+      "factors": [
+        {
+          "id": "acuity",
+          "label": "Clinical acuity score",
+          "detail": "Lower urgency than those placed above, on the documented scale the clinicians signed off.",
+          "influence": 71,
+          "opaque": false
+        },
+        {
+          "id": "wait",
+          "label": "Time already waited",
+          "detail": "Shorter than several placed above.",
+          "influence": 15,
+          "opaque": false
+        },
+        {
+          "id": "noshow",
+          "label": "Past no-shows",
+          "detail": "None on record.",
+          "influence": 3,
+          "opaque": false
+        },
+        {
+          "id": "ward",
+          "label": "Home ward",
+          "detail": "Revealing it shows almost no influence on the ordering.",
+          "influence": 4,
+          "opaque": false
+        }
+      ],
+      "decidingFactor": "acuity",
+      "inspectable": true,
+      "correct": "pass",
+      "altAccept": [],
+      "cites": [
+        "M4",
+        "H3",
+        "X2"
+      ],
+      "explain": "Clinical acuity, the factor the clinicians defined and signed off, is what ordered the queue, and it dominates every other signal. The decision is legible, relevant and defensible. Pass — and because you can show exactly why, the resident can contest it if the acuity score is wrong."
+    },
+    {
+      "id": "crew-hire",
+      "system": "Crew-shortlist SI (vendor)",
+      "subject": "an applicant ranked for a deck-crew post",
+      "decision": "CUT FROM SHORTLIST",
+      "kind": "opaque",
+      "briefing": "A bought-in SI ranks applicants. This one was cut. The vendor ships the model as a sealed unit. See how far you can actually trace it.",
+      "probeBudget": 3,
+      "factors": [
+        {
+          "id": "experience",
+          "label": "Logged flight hours",
+          "detail": "Above the posted minimum.",
+          "influence": 10,
+          "opaque": false
+        },
+        {
+          "id": "test",
+          "label": "Skills-test result",
+          "detail": "Mid-band; several kept applicants scored lower.",
+          "influence": 8,
+          "opaque": false
+        },
+        {
+          "id": "model_core",
+          "label": "Vendor model's internal ranking",
+          "detail": "Sealed. Probing confirms the vendor will not expose what drove the ranking, and it is what the cut turned on.",
+          "influence": -80,
+          "opaque": true
+        },
+        {
+          "id": "cover",
+          "label": "Cover letter length",
+          "detail": "Unusually short; small negative weight.",
+          "influence": -6,
+          "opaque": false
+        }
+      ],
+      "decidingFactor": "model_core",
+      "inspectable": false,
+      "correct": "revise",
+      "altAccept": [
+        "stop"
+      ],
+      "cites": [
+        "M4",
+        "X2",
+        "H3"
+      ],
+      "explain": "The factor that decided the cut is sealed inside the vendor's model: you spent probes and still cannot name a defensible reason. Oversight you cannot inspect is decorative — exactly what Gate 4 refuses. Revise: require the vendor to expose the ranking factors (or add a human decision-maker) before this ranking is used on people. If the vendor will not, it becomes stop."
+    },
+    {
+      "id": "dock-fraud",
+      "system": "Transaction-flag SI",
+      "subject": "a resident whose account was frozen for review",
+      "decision": "FROZEN",
+      "kind": "proxy",
+      "briefing": "The SI froze an account it flagged as suspicious. A freeze affects a real person today. Find what actually triggered it.",
+      "probeBudget": 4,
+      "factors": [
+        {
+          "id": "amount",
+          "label": "Transaction amount",
+          "detail": "Ordinary for this resident.",
+          "influence": 8,
+          "opaque": false
+        },
+        {
+          "id": "velocity",
+          "label": "Transaction velocity",
+          "detail": "Slightly elevated this week.",
+          "influence": 22,
+          "opaque": false
+        },
+        {
+          "id": "device",
+          "label": "Device type",
+          "detail": "Revealing it shows the freeze turned mostly on an older, cheaper terminal model — which tracks closely with low-income residents.",
+          "influence": 61,
+          "opaque": false,
+          "proxyFor": "income level"
+        },
+        {
+          "id": "hour",
+          "label": "Time of day",
+          "detail": "Off-peak, small weight.",
+          "influence": 11,
+          "opaque": false
+        }
+      ],
+      "decidingFactor": "device",
+      "inspectable": true,
+      "correct": "revise",
+      "altAccept": [
+        "stop"
+      ],
+      "cites": [
+        "M3",
+        "X3",
+        "M4"
+      ],
+      "explain": "The freeze turned mostly on the resident's device type, a proxy for income — not on anything about the transaction. The genuine signal, velocity, barely moved it. Revise: drop the device-type factor and re-run on the behaviour that actually signals fraud, and give the resident a fast way to contest the freeze. A freeze that rests on a proxy is not one you can defend."
+    },
+    {
+      "id": "shift-roster",
+      "system": "Shift-allocation SI",
+      "subject": "a crew member assigned the night rotation again",
+      "decision": "ASSIGNED NIGHTS",
+      "kind": "legible",
+      "briefing": "The roster SI assigned this crew member nights for the third cycle running. They have asked why. You have the box open.",
+      "probeBudget": 3,
+      "factors": [
+        {
+          "id": "pref",
+          "label": "Stated availability",
+          "detail": "They marked nights as their preferred rotation.",
+          "influence": 64,
+          "opaque": false
+        },
+        {
+          "id": "cert",
+          "label": "Night-ops certification",
+          "detail": "One of few certified for night ops; moderate weight.",
+          "influence": 28,
+          "opaque": false
+        },
+        {
+          "id": "seniority",
+          "label": "Seniority",
+          "detail": "Mid; little weight.",
+          "influence": 6,
+          "opaque": false
+        },
+        {
+          "id": "last",
+          "label": "Last rotation",
+          "detail": "Small continuity weight.",
+          "influence": 9,
+          "opaque": false
+        }
+      ],
+      "decidingFactor": "pref",
+      "inspectable": true,
+      "correct": "pass",
+      "altAccept": [],
+      "cites": [
+        "M4",
+        "H1",
+        "H3"
+      ],
+      "explain": "The deciding factor is the crew member's own stated preference for nights, backed by a scarce certification. The decision is legible and tracks what they asked for. Pass — and now you can answer their question plainly, which is the point of keeping the box glass."
+    }
+  ]
+}

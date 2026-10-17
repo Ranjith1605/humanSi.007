@@ -39,7 +39,7 @@ jobs:
           node-version: '22'
 
       - name: Scoring and level checks
-        run: node --test web/js/scoring.test.mjs web/js/game/levels.test.mjs
+        run: node --test web/js/scoring.test.mjs web/js/game/levels.test.mjs web/js/glassbox/glassbox.test.mjs
 
       - name: Every local asset, link and import resolves
         run: node scripts/check-assets.mjs
