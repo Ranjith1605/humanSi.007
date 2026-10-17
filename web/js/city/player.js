@@ -268,5 +268,12 @@ export function buildPlayer(ctx, spawn) {
     shadowMat.opacity = Math.max(0.12, 0.42 - pos.y * 0.22);
   }
 
-  return { object3D: group, position: pos, update };
+  // Hidden while Nova is inside a vehicle: her model and her contact shadow,
+  // which otherwise stays painted on the ground where she got in.
+  function setVisible(on) {
+    group.visible = on;
+    shadow.visible = on;
+  }
+
+  return { object3D: group, position: pos, update, setVisible };
 }

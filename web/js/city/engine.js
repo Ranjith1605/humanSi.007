@@ -12,6 +12,7 @@ import { buildWorld } from './world.js';
 import { buildPlayer } from './player.js';
 import { buildCitizens } from './citizens.js';
 import { buildPlaces } from './places.js';
+import { makePerfGovernor } from './perf.js';
 
 const STEP = 1 / 60;
 
@@ -45,9 +46,9 @@ export async function start() {
     hud.showFallback();
     return;
   }
-  renderer.setPixelRatio(Math.min(quality === 'high' ? 2 : 1.3, devicePixelRatio || 1));
-  renderer.setSize(innerWidth, innerHeight, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  // Sets the starting pixel ratio and size, then adapts both to real frame times.
+  const perf = makePerfGovernor(renderer, { quality, params });
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1400);
@@ -60,10 +61,23 @@ export async function start() {
   const interactions = makeInteractions(hud);
   const cam3p = makeCamera(camera, input);
 
+  // Who the input drives: Nova by default, or a vehicle that has taken control.
+  // A controller is { position: Vector3, update(dt) }; the camera and the place
+  // prompts follow whichever one is active.
+  let player = null;
+  let pilot = null;
+  const control = {
+    take(ctrl) { pilot = ctrl; },
+    release() { pilot = player; },
+    get active() { return pilot; },
+    get player() { return player; },
+  };
+
   const ctx = {
     THREE, scene, camera, renderer,
     clock: { time: 0, dt: STEP },
     quality, env, input, collision, interactions, hud,
+    camera3p: cam3p, control, perf,
     rng: makeRng(0x5ea17 ^ (quality === 'low' ? 1 : 0)),
     register(obj) { if (obj?.update) updaters.push(obj); if (obj?.dispose) disposers.push(obj); },
   };
@@ -73,7 +87,8 @@ export async function start() {
   const world = buildWorld(ctx);
   hud.setDistrict(world.districtName || 'Purpose Quarter');
   hud.setLoading(0.55);
-  const player = buildPlayer(ctx, world.spawn.clone());
+  player = buildPlayer(ctx, world.spawn.clone());
+  pilot = player;
   hud.setLoading(0.75);
   buildCitizens(ctx, world);
   buildPlaces(ctx, world);
@@ -110,7 +125,7 @@ export async function start() {
   addEventListener('resize', () => {
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight, false);
+    perf.resize();
   });
 
   // --- debug ---
@@ -125,13 +140,17 @@ export async function start() {
         drawCalls: renderer.info.render.calls,
         triangles: renderer.info.render.triangles,
         quality,
+        dpr: perf.dpr,
+        perfLevel: perf.level,
+        driving: pilot !== player,
+        pilot: { x: +pilot.position.x.toFixed(2), y: +pilot.position.y.toFixed(2), z: +pilot.position.z.toFixed(2) },
         timeOfDay: +env.timeOfDay.toFixed(3),
         colliders: collision.count,
         places: interactions.count,
         nearest: interactions.nearest,
         player: { x: +player.position.x.toFixed(2), y: +player.position.y.toFixed(2), z: +player.position.z.toFixed(2) },
       }),
-      teleport: (x, z) => { player.position.x = x; player.position.z = z; },
+      teleport: (x, z) => { pilot.position.x = x; pilot.position.z = z; },
       setTimeOfDay: (t) => env.setTimeOfDay(t),
     };
   }
@@ -139,6 +158,8 @@ export async function start() {
   // --- loop ---
   let last = performance.now();
   let dayClock = env.timeOfDay;
+  let carryJump = false;
+  let carryAct = false;
   function frame(now) {
     requestAnimationFrame(frame);
     let delta = (now - last) / 1000;
@@ -148,23 +169,45 @@ export async function start() {
     // fps meter
     fpsT += delta; frames++;
     if (fpsT >= 0.5) { fps = frames / fpsT; frames = 0; fpsT = 0; }
+    if (!paused) perf.frame(delta);
 
     input.sample();
     if (input.state.pausePressed) setPaused(!paused);
 
+    // Edge presses (jump, use) reach exactly one fixed step. On a 120 Hz screen
+    // many frames run no step at all and the press would be lost; on a 30 fps
+    // phone two steps run per frame and a toggle (lift off, leave the car)
+    // would fire twice and undo itself.
+    const pressedAct = input.state.activate;
+    if (input.state.jump) carryJump = true;
+    if (pressedAct) carryAct = true;
+
     if (!paused) {
+      const wasDriving = pilot !== player;
       acc += delta;
       let steps = 0;
       while (acc >= STEP && steps < 5) {
+        input.state.jump = carryJump;
+        input.state.activate = carryAct;
+        carryJump = false;
+        carryAct = false;
         ctx.clock.time += STEP;
-        player.update(STEP);
+        pilot.update(STEP);
         for (const u of updaters) u.update(STEP);
         acc -= STEP; steps++;
       }
+      input.state.jump = false;
+      input.state.activate = false;
       // Day/night: a slow cycle (~6 real minutes per day), paused with reduced motion.
       if (!reduceMotion) { dayClock = (dayClock + delta / 360) % 1; env.setTimeOfDay(dayClock); }
-      cam3p.update(delta, player.position, reduceMotion);
-      interactions.update(player.position, input.state.activate);
+      cam3p.update(delta, pilot.position, reduceMotion);
+      // A press that a vehicle used (to step out) must not also open the place
+      // the player lands beside; a press a place used (say, to hand control to
+      // the roadster) must not reach the vehicle's first step.
+      if (interactions.update(pilot.position, pressedAct && !wasDriving)) carryAct = false;
+    } else {
+      carryJump = false;
+      carryAct = false;
     }
     input.endFrame();
     renderer.render(scene, camera);
