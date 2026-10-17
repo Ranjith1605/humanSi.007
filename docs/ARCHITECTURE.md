@@ -350,3 +350,31 @@ the note, the catalog caveat and the disclaimer. The console panel:
   transcript where every SI message is labelled "SI-generated · <model> ·
   orientation, not legal advice", a **Stop** button (human override, aborts the
   stream), and starter prompts about the gates.
+
+## The Glass Box (`inspect.html`)
+
+A second, standalone mode: a slow inspection puzzle that makes Gate 4 playable —
+*you cannot oversee a decision you cannot inspect.* It is pure client side
+(vanilla ES modules, no server, works on GitHub Pages and offline), and it keeps
+a best score in `localStorage` only.
+
+- **Content:** `web/data/glassbox.json` holds the cases. Each case is an SI
+  decision about a person, a set of `factors` (label, detail, integer
+  `influence`, optional `opaque`, optional `proxyFor`), the authored
+  `decidingFactor`, the `correct` verdict plus any `altAccept`, the Rule Book
+  `cites`, and the `explain`. Three kinds: **legible** (decides on a visible,
+  relevant factor → pass), **opaque** (decides on a sealed factor → you cannot
+  defend it → revise/stop), **proxy** (decides on a factor that stands in for a
+  protected attribute → red line → revise/stop).
+- **Logic:** `web/js/glassbox/logic.js` is the pure, tested core
+  (`web/js/glassbox/glassbox.test.mjs`, `node --test`). The deciding factor is
+  the greatest-|influence| one, and the test enforces that the authored
+  `decidingFactor` agrees, that opaque/proxy cases never accept a pass, and that
+  every `cites` id exists in `rulebook.json`.
+- **Loop:** probe factors (a budget, less than the factor count, so opacity
+  costs you) → name the deciding factor (only a probed factor can be named) →
+  give the verdict. Feedback reveals the full influence picture, the true
+  deciding factor, and the cited Rule Book articles. `?debug=1` exposes
+  `window.__glassbox` with `getState()` and `deciding()`.
+- **Honesty:** every case is labelled a teaching simulation; no case claims to
+  describe a real system, person or decision, and nothing is scored server side.

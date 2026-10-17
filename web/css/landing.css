@@ -1308,3 +1308,14 @@ p { margin: 0 0 1em; }
   .board__feed li,
   .article:target { animation: none; }
 }
+
+/* ---- The Glass Box teaser ---- */
+.glassbox-teaser__panel {
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-l);
+  background: linear-gradient(180deg, rgba(102, 225, 255, 0.05), rgba(8, 12, 26, 0.5));
+  padding: clamp(1.2rem, 4vw, 2.2rem);
+}
+.glassbox-teaser__lead { font-size: 1.1rem; color: var(--text); margin: 0.4rem 0 0.8rem; }
+.glassbox-teaser__point { color: var(--text-dim); margin: 0 0 1rem; }
+.glassbox-teaser__point em { color: var(--cyan); font-style: italic; }
