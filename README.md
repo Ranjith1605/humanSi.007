@@ -112,6 +112,13 @@ decision you cannot inspect.* Some boxes are glass, some are sealed, and some
 look clean until you find the proxy. It runs entirely in the browser, offline,
 and keeps no score anywhere but your own device.
 
+**Synergy City** (new) is a 3D district you can walk. Step aboard the ISV
+Synergy as Nova and stroll its Purpose Quarter — a low-poly open world, built in
+the browser with three.js, with a lit skyline, a day/night sky and a crowd going
+about its day. The Rule Book, Nova Run, the Glass Box and the Model Hangar are
+places here: walk up and press E to enter. It needs WebGL and runs solo; a plain
+link to each destination is always there for browsers that can't open it.
+
 ## Play
 
 **[ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/)**
@@ -142,6 +149,11 @@ verdicts (keys 1, 2, 3) work with the keyboard alone.
 **The Glass Box** is at `/inspect.html` (linked from the landing page). It is
 point-and-click: probe a factor, name the deciding one, give a verdict. No
 install, no server, nothing stored beyond your best score on your own device.
+
+**Synergy City** is at `/city.html` (linked from the landing page). Walk with
+WASD or the arrows, Shift to run, drag or the right stick to look, E to use a
+place, Esc to pause; gamepad and touch work too. It needs WebGL — a fallback
+with plain links shows if the browser can't run it.
 
 ## Run the fleet server
 
@@ -193,7 +205,8 @@ ends the generation on the server too.
 ## Repository map
 
 ```
-web/            the whole site: landing page, Nova Run, the Glass Box, Model Hangar, Rule Book data, media
+web/            the whole site: landing page, Nova Run, the Glass Box, Synergy City (3D), Model Hangar, Rule Book data, media
+web/vendor/three/ vendored three.js r160 (MIT), served from the repo — no CDN at runtime
 cmd/humansi/    the fleet server's entry point: flags, wiring, graceful shutdown
 internal/       server packages: rulebook, game (scoring mirror), leaderboard, clearance, copilot, api
 testdata/       the scoring fixture shared by the Go and JavaScript tests
@@ -241,6 +254,7 @@ This repository is being built in the open. The current state:
 | Architecture ([`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)) | ✅ in the repo |
 | Nova Run (the game): six levels, one per gate | ✅ built: full runs through all six gates, scored and submitted, checked in solo and fleet mode |
 | The Glass Box: the Gate-4 inspection puzzle | ✅ built: five cases, full run checked in a browser at desktop and phone width |
+| Synergy City (Phase 1): the 3D Purpose Quarter | ✅ built: walkable, four places, day/night, crowd; verified rendering (~30 draw calls) with no console errors |
 | Landing page | ✅ built |
 | Fleet server (Go): server scoring, shared board, live feed, launch clearance | ✅ built and checked end to end with the site |
 | Model Hangar page and SI console | ✅ built; the console is tested against a stand-in for Ollama, not yet against a real model |

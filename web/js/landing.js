@@ -505,7 +505,7 @@ function board(rb, mode) {
 
 // ----------------------------------------------------------------- main --
 
-const SECTIONS = ['nova-run', 'glass-box', 'charter', 'gates', 'shu-ha-ri', 'crew', 'integrity', 'vision', 'board'];
+const SECTIONS = ['nova-run', 'glass-box', 'synergy-city', 'charter', 'gates', 'shu-ha-ri', 'crew', 'integrity', 'vision', 'board'];
 
 async function main() {
   topbar();

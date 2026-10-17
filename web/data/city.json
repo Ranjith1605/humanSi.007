@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "district": "Purpose Quarter",
+  "accent": "#c58bff",
+  "note": "Points of interest in the Purpose Quarter. Positions are metres [x, z] on the ground. Each opens one of the site's existing destinations.",
+  "places": [
+    {
+      "id": "arcade",
+      "label": "Nova Run — arcade cabinet",
+      "hint": "Press E to play",
+      "position": [14, -10],
+      "color": "#66e1ff",
+      "href": "play.html"
+    },
+    {
+      "id": "rulebook",
+      "label": "The Rule Book kiosk",
+      "hint": "Press E to read",
+      "position": [-16, -6],
+      "color": "#ffcf7a",
+      "href": "index.html#gates"
+    },
+    {
+      "id": "glassbox",
+      "label": "The Glass Box terminal",
+      "hint": "Press E to inspect",
+      "position": [0, 20],
+      "color": "#5dffa6",
+      "href": "inspect.html"
+    },
+    {
+      "id": "hangar",
+      "label": "Model Hangar gate",
+      "hint": "Press E to enter",
+      "position": [22, 16],
+      "color": "#ff6b8b",
+      "href": "hangar.html"
+    }
+  ]
+}
