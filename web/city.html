@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <title>Synergy City — HumanSI Synergy</title>
+    <meta name="description" content="Walk the ISV Synergy's station-city: an explorable 3D district where the Rule Book, Nova Run, the Glass Box and the Model Hangar are places you can visit." />
+    <meta name="theme-color" content="#05060f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/city.css" />
+  </head>
+  <body>
+    <canvas id="view" aria-label="Synergy City, a 3D district you can walk through. The same places — the Rule Book, Nova Run, the Glass Box and the Model Hangar — are linked from the home page if you prefer not to use the 3D view."></canvas>
+
+    <div id="hud" class="hud" aria-live="polite">
+      <div class="hud__top">
+        <a class="hud__brand" href="index.html">HumanSI <span>Synergy</span></a>
+        <span class="hud__district" id="district"></span>
+      </div>
+      <div class="hud__prompt" id="prompt" hidden>
+        <span class="hud__prompt-label" id="prompt-label"></span>
+        <span class="hud__prompt-hint" id="prompt-hint"></span>
+      </div>
+      <div class="hud__toast" id="toast" hidden></div>
+    </div>
+
+    <!-- Touch controls, shown only on touch devices by the input module -->
+    <div id="touch" class="touch" hidden aria-hidden="true">
+      <div class="touch__stick" id="stick"><span class="touch__nub" id="nub"></span></div>
+      <div class="touch__buttons">
+        <button class="touch__btn" id="btn-run" type="button">Run</button>
+        <button class="touch__btn" id="btn-act" type="button">Use</button>
+      </div>
+    </div>
+
+    <div id="loading" class="screen screen--loading">
+      <p class="screen__eyebrow">ISV Synergy · docking</p>
+      <h1 class="screen__title">Synergy City</h1>
+      <div class="bar"><div class="bar__fill" id="load-fill"></div></div>
+      <p class="screen__hint" id="load-hint">Building the district…</p>
+      <noscript><p class="screen__hint">This 3D city needs JavaScript and WebGL. Everything it links to — the <a href="index.html#gates">Rule Book</a>, <a href="play.html">Nova Run</a>, the <a href="inspect.html">Glass Box</a> and the <a href="hangar.html">Model Hangar</a> — works without it.</p></noscript>
+    </div>
+
+    <div id="pause" class="screen screen--pause" hidden>
+      <h2 class="screen__title">Paused</h2>
+      <div class="screen__row">
+        <button class="btn btn--primary" id="resume" type="button">Resume</button>
+        <a class="btn btn--ghost" href="index.html">Leave the city</a>
+      </div>
+      <dl class="controls" id="controls"></dl>
+    </div>
+
+    <div id="fallback" class="screen screen--fallback" hidden>
+      <h2 class="screen__title">This browser can't open the 3D city</h2>
+      <p class="screen__hint">WebGL isn't available here. The city is only a 3D way into these — each works on its own:</p>
+      <div class="screen__row">
+        <a class="btn btn--primary" href="play.html">Nova Run</a>
+        <a class="btn btn--ghost" href="inspect.html">The Glass Box</a>
+        <a class="btn btn--ghost" href="hangar.html">Model Hangar</a>
+        <a class="btn btn--ghost" href="index.html">Home</a>
+      </div>
+    </div>
+
+    <script type="module" src="js/city/main.js"></script>
+  </body>
+</html>
