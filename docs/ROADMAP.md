@@ -36,6 +36,12 @@ clearance, and every check in CI is green.
 
 ## Phase 1 · Synergy City: the 3D open world (v0.2)
 
+> **Status (in progress):** the Purpose Quarter vertical slice has landed — a
+> walkable low-poly district with Nova, a strolling crowd, day/night, and the four
+> places (Nova Run, Rule Book, Glass Box, Model Hangar) as interactables, on a
+> vendored three.js. The other five districts are a distant skyline for now. See
+> [docs/CITY.md](CITY.md) for the build contract.
+
 A full 3D open world in the browser: the station-city around the ISV Synergy,
 with one district per gate, explored on foot and by hover-craft.
 
