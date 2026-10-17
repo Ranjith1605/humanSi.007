@@ -157,3 +157,99 @@ Build the **Purpose Quarter** fully and well, with Nova walkable, citizens,
 day/night, the four interactable places, and the other five districts as a
 distant skyline. Not this phase: interiors, the hover-craft city-wide, the living
 citizen minds (that is Phase 2–3 on the roadmap).
+
+---
+
+## Phase 1.5 · Skyway, the roadster, and phones (contract)
+
+> **Status:** the control handoff, exactly-once presses and adaptive resolution
+> have landed. The skyway, the roadster and install/offline are in progress.
+
+### Control handoff (`ctx.control`, `ctx.camera3p`, `ctx.perf`)
+
+The engine drives one **controller** at a time: `{ position: THREE.Vector3, update(dt) }`.
+Nova is the default. A vehicle takes over with `ctx.control.take(controller)` and
+hands back with `ctx.control.release()`; `ctx.control.active` and
+`ctx.control.player` (Nova: `{ object3D, position, update, setVisible(on) }`)
+are readable. The camera and the place prompts follow the active controller.
+
+- `ctx.camera3p.setDistance(m)`: follow distance (7.5 on foot; wider for a car).
+- `ctx.interactions.setEnabled(false)` silences the place prompts while driving;
+  `add()` returns the item, and moving `item.pos` moves its prompt (a parked car's
+  prompt must follow the car).
+- **Edge presses are exactly-once.** `input.state.jump` and `input.state.activate`
+  are true in exactly one fixed step per press, whatever the frame rate. A press
+  used to step out of a vehicle does not also open a nearby place, and the press
+  that opens a place is not seen by a vehicle on its first step.
+- Touch has a third button, `#btn-up` (labelled "Jump"), wired to `jump`. A
+  vehicle may relabel it ("Lift", "Land") and must restore "Jump" on exit.
+- `ctx.collision.resolve(pos, r, only)`: with `only = 'wall'`, only the district
+  wall is solid (for flight above the rooftops). The tallest building is 56 m.
+- `ctx.perf`: `{ level, dpr, fps, onChange(fn) }`. Level 0 = full detail, 1 =
+  reduced, 2 = minimal. Modules with optional detail (flying traffic, crowd
+  extras) subscribe and shed work at 1–2.
+
+### Skyway (`web/js/city/skyway.js`): `export function buildSkyway(ctx, world)`
+
+Flying traffic above the Purpose Quarter. Lanes are loops over the street grid
+(roads run along x or z = ±48 and ±96, avenues at 0) at 64–92 m, each lane one
+direction, stacked at different heights so traffic crosses without meeting.
+Vehicles are **original sky-pods** designed in code: a teardrop body, a glass
+canopy, four ducted rotor rings and an emissive under-glow, with red/green nav
+lights; they bank into turns and keep spacing. Instanced (≤ 6 draw calls).
+Counts: 80 on high, 24 on low, halved at perf level 1, a quarter at level 2.
+Seeded by `ctx.rng`. Night makes the glow stronger (`ctx.env.timeOfDay`).
+
+### Roadster (`web/js/city/roadster.js`): `export function buildRoadster(ctx, world)`
+
+An **original electric roadster** (no real brand, badge, name or likeness): a
+low two-seat wedge with a glass canopy, a full-width light bar front and rear,
+and four wheels that fold flat and glow when it flies. Parked at `[8, -24]`
+facing north (toward the plaza), next to Nova's spawn.
+
+- **Enter:** an interaction (`label: 'Electric roadster'`, `hint: 'Press E to drive'`,
+  radius 3.5). On activate: Nova hidden (`setVisible(false)`), places silenced,
+  `control.take(car)`, camera 11 m, HUD prompt with the controls.
+- **Drive:** throttle and reverse on `move.y`, steer on `move.x` (yaw rate grows
+  with speed), boost on `run`; ~26 m/s top speed (~95 km/h), 8 m/s reverse;
+  `collision.resolve(pos, 1.8)` against buildings and the wall.
+- **Fly:** `jump` lifts off: wheels fold, the car climbs to a 70 m cruise height
+  (above every roof), then flies forward/back on `move.y`, yaws on `move.x`, up to
+  ~45 m/s (65 with boost), banking visually. Above 60 m only the wall collides.
+  `jump` again lands straight down if the spot below is clear
+  (`collision.blocks(x, z, 1.8)` false), else stays up and toasts
+  "No room to land here: fly over a street".
+- **Exit:** `activate` while landed and slower than 4 m/s puts Nova beside the
+  driver's door (collision-resolved), shows her, restores the camera, places and
+  the touch label, and releases control. The parked car keeps its interaction.
+- Respect reduced motion (no bank wobble, steadier camera). The debug state reports
+  `driving` and `pilot`.
+
+### Install and offline (PWA)
+
+HumanSI Synergy installs as an app on iOS and Android and opens offline.
+
+- `web/manifest.webmanifest`: name "HumanSI Synergy", short name "HumanSI",
+  `start_url` and `scope` `./`, `display: standalone`, dark `background_color`
+  and `theme_color` from `css/tokens.css`, icons 192 and 512 (plus a maskable
+  512) in `web/assets/icons/`, and shortcuts to Synergy City, Architect and Nova Run.
+- Every page's `<head>` gets: `<link rel="manifest" href="manifest.webmanifest">`,
+  `<link rel="icon" …>` and `<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">`
+  (180 × 180), `<meta name="mobile-web-app-capable" content="yes">`,
+  `<meta name="apple-mobile-web-app-capable" content="yes">`,
+  `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`,
+  `<meta name="apple-mobile-web-app-title" content="HumanSI">`, and
+  `<script type="module" src="js/pwa.js"></script>`.
+- `web/js/pwa.js` registers `sw.js` (relative, so it works under the Pages
+  sub-path and at the Go server's root) when `serviceWorker` is supported and the
+  page is a secure context. Nothing else.
+- `web/sw.js`: a versioned cache. On install, precache the app shell (every page,
+  its CSS and JS modules, the vendored three.js, `data/*.json`, icons). Fetch:
+  same-origin GET only; never touch `/api/` or event streams; navigations are
+  network-first with the cached page as the offline fallback; other assets are
+  stale-while-revalidate; videos are never precached. Old caches are deleted on
+  activate. A version bump is the only cache-busting mechanism.
+- The Go server serves `.webmanifest` as `application/manifest+json`.
+- Icons are original (the HumanSI mark: a cyan visor arc in a violet ring on the
+  void colour), rendered from `web/assets/icons/icon.svg` by
+  `scripts/build-icons.mjs` (dev-only, not run in CI) and committed as PNGs.
