@@ -129,6 +129,9 @@ body {
   background: radial-gradient(1000px 600px at 50% 40%, rgba(197, 139, 255, 0.12), transparent 60%), rgba(4, 5, 11, 0.92);
   z-index: 10;
 }
+/* The .screen display rule above would otherwise defeat the [hidden] attribute,
+   so make hidden authoritative for the overlays and touch layer. */
+.screen[hidden], .touch[hidden] { display: none; }
 .screen--pause { background: rgba(4, 5, 11, 0.82); backdrop-filter: blur(6px); }
 .screen__eyebrow { font-family: var(--font-mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--violet); margin: 0; font-size: 0.75rem; }
 .screen__title { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 6vw, 3rem); margin: 0; }
