@@ -4,6 +4,9 @@ import * as THREE from '../../vendor/three/three.module.js';
 
 export function makeInput(canvas) {
   const keys = new Set();
+  // Keys pressed since the last sample, so a tap shorter than one frame (easy on
+  // a slow phone) still counts even though it is no longer held when we look.
+  const tapped = new Set();
   const state = {
     move: new THREE.Vector2(), // camera-relative, -1..1
     look: new THREE.Vector2(), // yaw,pitch delta this frame
@@ -13,18 +16,22 @@ export function makeInput(canvas) {
     pausePressed: false, // edge
   };
   let jumpLatch = false;
+  let keyJumpLatch = false;
   let actLatch = false;
+  let keyActLatch = false;
   let pauseLatch = false;
+  let keyPauseLatch = false;
 
   // --- keyboard ---
   const code = (e) => e.code;
   addEventListener('keydown', (e) => {
     if (e.repeat) return;
     keys.add(code(e));
+    tapped.add(code(e));
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
   }, { passive: false });
   addEventListener('keyup', (e) => keys.delete(code(e)));
-  addEventListener('blur', () => keys.clear());
+  addEventListener('blur', () => { keys.clear(); tapped.clear(); });
 
   // --- pointer look (drag) ---
   let dragging = false;
@@ -60,6 +67,7 @@ export function makeInput(canvas) {
   const touchMove = new THREE.Vector2();
   let touchRun = false;
   let touchActLatch = false;
+  let touchJumpLatch = false;
   if (matchMedia('(pointer: coarse)').matches && touchEl) {
     touchEl.hidden = false;
     touchEl.setAttribute('aria-hidden', 'false');
@@ -84,6 +92,8 @@ export function makeInput(canvas) {
     runBtn.addEventListener('pointerup', () => { touchRun = false; });
     runBtn.addEventListener('pointercancel', () => { touchRun = false; });
     document.getElementById('btn-act').addEventListener('pointerdown', () => { touchActLatch = true; });
+    // Jump on foot; lift off / land in the roadster (it relabels this button).
+    document.getElementById('btn-up')?.addEventListener('pointerdown', () => { touchJumpLatch = true; });
   }
 
   function keyAxis() {
@@ -131,10 +141,16 @@ export function makeInput(canvas) {
     pollGamepad();
 
     // edge-triggered keys
-    if (keys.has('Space')) { if (!jumpLatch) state.jump = true; jumpLatch = true; } else if (!navigator.getGamepads) jumpLatch = false;
-    if (keys.has('KeyE')) { if (!actLatch) state.activate = true; actLatch = true; } else actLatch = false;
+    // Keyboard keys have their own latches: sharing the gamepad's meant Space
+    // only ever fired once with no pad connected, and E/Esc re-fired every frame
+    // while held with one connected (the pad poll kept clearing the latch).
+    if (keys.has('Space') || tapped.has('Space')) { if (!keyJumpLatch) state.jump = true; keyJumpLatch = keys.has('Space'); } else keyJumpLatch = false;
+    if (keys.has('KeyE') || tapped.has('KeyE')) { if (!keyActLatch) state.activate = true; keyActLatch = keys.has('KeyE'); } else keyActLatch = false;
     if (touchActLatch) { state.activate = true; touchActLatch = false; }
-    if (keys.has('Escape') || keys.has('KeyP')) { if (!pauseLatch) state.pausePressed = true; pauseLatch = true; } else pauseLatch = false;
+    if (touchJumpLatch) { state.jump = true; touchJumpLatch = false; }
+    const pauseKey = keys.has('Escape') || keys.has('KeyP');
+    if (pauseKey || tapped.has('Escape') || tapped.has('KeyP')) { if (!keyPauseLatch) state.pausePressed = true; keyPauseLatch = pauseKey; } else keyPauseLatch = false;
+    tapped.clear();
   }
 
   function endFrame() { state.look.set(0, 0); }

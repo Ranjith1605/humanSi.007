@@ -35,12 +35,15 @@ export function makeCollision(cell = 20) {
   const EMPTY = [];
 
   // Push a circle (x,z,r) out of the nearest overlapping box along the shallowest axis.
-  function resolve(position, radius) {
+  // `only`, when given, limits the test to boxes with that tag: a vehicle flying
+  // above the rooftops still has to respect the district wall, but not buildings.
+  function resolve(position, radius, only) {
     for (let pass = 0; pass < 2; pass++) {
       const candidates = near(position.x, position.z);
       let hit = false;
       for (const i of candidates) {
         const b = boxes[i];
+        if (only && b.tag !== only) continue;
         const nx = Math.max(b.minX, Math.min(position.x, b.maxX));
         const nz = Math.max(b.minZ, Math.min(position.z, b.maxZ));
         const dx = position.x - nx;

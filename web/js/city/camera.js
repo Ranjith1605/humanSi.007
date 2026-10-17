@@ -10,8 +10,11 @@ export function makeCamera(camera, input) {
   const pos = new THREE.Vector3();
   const desired = new THREE.Vector3();
   let dist = 7.5;
+  let wantDist = 7.5;
 
   function update(dt, focus, reduceMotion) {
+    // Ease toward the requested distance (a car or a flight wants a wider view).
+    dist += (wantDist - dist) * (reduceMotion ? 1 : Math.min(1, dt * 3));
     yaw -= input.state.look.x;
     pitch = Math.max(0.08, Math.min(1.15, pitch + input.state.look.y));
 
@@ -36,5 +39,7 @@ export function makeCamera(camera, input) {
     update,
     get yaw() { return yaw; },
     setYaw(v) { yaw = v; },
+    /** Follow distance in metres; 7.5 is Nova on foot. */
+    setDistance(d) { wantDist = d; },
   };
 }
