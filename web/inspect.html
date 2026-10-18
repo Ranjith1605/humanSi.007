@@ -9,6 +9,14 @@
       content="Reverse-engineer an SI decision before you sign off on it. A teaching puzzle from HumanSI Synergy: you cannot oversee a decision you cannot inspect."
     />
     <meta name="theme-color" content="#05060f" />
+    <!-- Installable app: the HumanSI mark as the tab and home-screen icon. -->
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HumanSI" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,6 +25,7 @@
     />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/inspect.css" />
+    <script type="module" src="js/pwa.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the puzzle</a>

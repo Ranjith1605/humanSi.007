@@ -12,6 +12,8 @@ import { buildWorld } from './world.js';
 import { buildPlayer } from './player.js';
 import { buildCitizens } from './citizens.js';
 import { buildPlaces } from './places.js';
+import { buildSkyway } from './skyway.js';
+import { buildRoadster } from './roadster.js';
 import { makePerfGovernor } from './perf.js';
 
 const STEP = 1 / 60;
@@ -92,6 +94,9 @@ export async function start() {
   hud.setLoading(0.75);
   buildCitizens(ctx, world);
   buildPlaces(ctx, world);
+  hud.setLoading(0.9);
+  buildSkyway(ctx, world);
+  buildRoadster(ctx, world);
   hud.setLoading(1);
 
   // Ring the walkable area with invisible walls so the player can't leave.

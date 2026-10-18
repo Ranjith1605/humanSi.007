@@ -6,12 +6,21 @@
   <title>Nova Run · HumanSI Synergy</title>
   <meta name="description" content="Nova Run: an original side-scrolling platformer that flies the Six Gates of the HumanSI Rule Book.">
   <meta name="theme-color" content="#04050b">
+  <!-- Installable app: the HumanSI mark as the tab and home-screen icon. -->
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HumanSI">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/game.css">
   <script type="module" src="js/game/main.js"></script>
+  <script type="module" src="js/pwa.js"></script>
 </head>
 <body class="game" data-screen="loading">
   <main class="stage" id="stage">
