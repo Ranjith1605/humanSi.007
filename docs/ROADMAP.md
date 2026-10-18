@@ -39,7 +39,10 @@ clearance, and every check in CI is green.
 > **Status (in progress):** the Purpose Quarter vertical slice has landed — a
 > walkable low-poly district with Nova, a strolling crowd, day/night, and the four
 > places (Nova Run, Rule Book, Glass Box, Model Hangar) as interactables, on a
-> vendored three.js. The other five districts are a distant skyline for now. See
+> vendored three.js. Resolution and detail adapt to the device's real frame
+> rate. In the works: sky-pod traffic on the skyway, the hover-craft as an
+> electric roadster you can drive and fly, and installing the site as an app
+> that works offline. The other five districts are a distant skyline for now. See
 > [docs/CITY.md](CITY.md) for the build contract.
 
 A full 3D open world in the browser: the station-city around the ISV Synergy,
@@ -64,6 +67,24 @@ with one district per gate, explored on foot and by hover-craft.
 **Done when:** you can roam the slice district for 10 minutes at a steady 60 fps
 on a mid-range laptop (30 fps on a recent phone in low-detail mode), with no dead
 ends and no falling through the world.
+
+## Phase 1b · Architect: build the city yourself (v0.2)
+
+A city-builder on a 64 × 64 grid, from the genre's well-documented design
+(zoning, power, traffic, pollution, land value, demand valves, budget) in our own
+code, with two twists: smart buildings that cut power and pollution, and
+skyports that move traffic into the air. Its SI advisor, Synergy, is the first
+playable form of Phase 4: it proposes concrete actions with the numbers behind
+them, the player accepts or declines, and every decision is logged.
+
+- A pure, deterministic simulation in a web worker, unit-tested in CI.
+- Procedural architecture per zone and density, all instanced, rendered on demand.
+- Touch-first controls: tap and drag to build, pinch to zoom, twist to rotate.
+
+**Done when:** a new player grows a city past 3 000 residents on a phone, the
+same seed and actions replay to the same city, and every Synergy proposal shows
+the numbers that triggered it. Contract and genre teardown:
+[docs/ARCHITECT.md](ARCHITECT.md).
 
 ## Phase 2 · Citizens: a living crowd (v0.3)
 

@@ -331,6 +331,23 @@ export function createControls(view, canvas, { onTap(x, y), onDragPaint(phase, a
 
 ### `ui.js` and the page
 
+**Digital minimalism is the design rule.** People don't have time to read, so the
+city is the interface and the chrome stays out of its way:
+
+- **Icons first, words second.** Tools, speeds and overlays are icon buttons with
+  a 1–2 word label; costs are a small number, not a sentence.
+- **Progressive disclosure.** Show the one number that matters; details open on
+  tap (a tile's full readout, a proposal's reasons, the budget's line items).
+  Panels are closed by default and never open by themselves.
+- **No paragraphs on screen.** Any line of copy is at most ~6 words. Help is a
+  single coach mark per concept, shown once (remembered in `localStorage`) and
+  fading on its own.
+- **Seamless play.** The city starts the moment the page loads: no title screen,
+  no new-game form, no confirm dialogs for reversible actions. Tool results are
+  felt in the scene (the cursor flashes red, the tile pops) with a toast only
+  when the reason isn't visible.
+- **Calm motion.** Short eased transitions (150–250 ms), none under reduced motion.
+
 - **Top bar**: funds, date, residents, jobs, power supply/demand, and three small
   R/C/I demand bars.
 - **Tool palette**: bottom, horizontally scrollable on phones, ≥ 44 px targets,
@@ -342,8 +359,9 @@ export function createControls(view, canvas, { onTap(x, y), onDragPaint(phase, a
   slider 0–20 %, Smart Code toggle, income/upkeep), Synergy (proposals with
   reasons, Accept / Decline, and the decision log), City (new city with seed,
   save, load).
-- **Synergy panel copy** must say: "Synergy is a rule-based advisor. It proposes;
-  you decide. Every decision is logged."
+- **Synergy** surfaces as a small badge with a count when it has proposals. Each
+  proposal is one line (a title of a few words) with ✓ / ✕; its reasons expand on
+  tap. The panel's single line of copy: "Rule-based advisor · you decide · logged".
 - **Save**: `localStorage` key `humansi.architect.v1`, wrapped in try/catch (private
   mode may throw); autosave every 12 ticks and on `pagehide`.
 - Loading screen, pause-free WebGL fallback with links, and a `?debug=1` hook:
