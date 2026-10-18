@@ -89,7 +89,7 @@ const POOR_LAND_CHANCE = 0.15;
 // Taller takes longer: the monthly growth roll is scaled by the level a lot is
 // growing to, so a new town shows homes within weeks but its towers arrive
 // over a couple of years, and there is still something to watch in year two.
-const LEVEL_PACE = [0, 1, 0.45, 0.3];
+const LEVEL_PACE = [0, 1, 0.6, 0.3];
 // The monthly growth budget, in residents or jobs, scaled by demand: a fixed
 // part so a small town can grow at all, and a share of what the city already
 // has. The share compounds, so it stays small: at 8 % a well-run city went
@@ -112,7 +112,7 @@ const NEGLECT_TICKS = 3; // months without power or access before a building los
 // Income is tax % × (residents + 1.5 × jobs) × INCOME_RATE / 12 a month. The
 // contract's starting tune had no INCOME_RATE (1.0); play-testing a scripted
 // city showed money stopped mattering by year 3, so it is scaled down.
-const INCOME_RATE = 0.2;
+const INCOME_RATE = 0.3;
 const UPKEEP = [0, 1, 0, 0, 0, 2, 50, 5, 5, 30]; // by kind; 2×2 structures counted once
 const PROPOSAL_LIMIT = 3;
 const DECLINE_COOLDOWN = 12;
