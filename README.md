@@ -2,6 +2,8 @@
 
 **A new world. A playbook you can play.**
 
+**[▶ Play in your browser](https://ranjith1605.github.io/humanSi.007/)** · phone or desktop · free · no account
+
 ```
 > boot humanSi.007
 > loading world ........................ ISV Synergy
@@ -12,21 +14,101 @@
 > status ............................... simulation ready
 ```
 
-HumanSI Synergy is a simulation: a small new world aboard the starship
-**ISV Synergy**, where humans and Super Intelligence (SI) learn to share the
-controls. The world runs on one set of laws, **the Rule Book**, the playbook of
-this simulation. You don't read it so much as play it. Every level is a law of
-the world, and every gate is a decision you have to get right before an SI
-system is allowed to touch a real one.
+## Why this game
+
+Super-intelligence (SI) is arriving in real decisions: loans, clinics, cities.
+The skill that matters is **oversight**: knowing when to say *pass*, *revise* or *stop*.
+This game is where you practise it.
+
+```mermaid
+flowchart LR
+  A["🤖 SI proposes"] --> B{"🧑 You decide"}
+  B -- PASS --> C["✅ It happens"]
+  B -- REVISE --> A
+  B -- STOP --> D["⛔ It doesn't"]
+  C --> E["📜 Logged, reviewable"]
+  D --> E
+```
 
 > **Orientation, not legal advice.** This Rule Book does not license, certify
 > or authorise anyone, and it is not a compliance guarantee. Anything with legal
 > consequence goes to qualified counsel. The method is designed against the EU AI
 > Act's articles and formatively evaluated; it is not field-validated.
 
----
+## Pick a mode
 
-## The playbook of this world
+| | Mode | You… |
+|:-:|------|------|
+| 🐧 | **[Nova Run](https://ranjith1605.github.io/humanSi.007/web/play.html)** | race the Six Gates as Nova, the ship's penguin |
+| 🔍 | **[The Glass Box](https://ranjith1605.github.io/humanSi.007/web/inspect.html)** | open an SI's decision and find what tipped it |
+| 🌆 | **[Synergy City](https://ranjith1605.github.io/humanSi.007/web/city.html)** | walk a 3D city · *flying cars and a roadster in the works* |
+| 🏗️ | **Architect** · *in the works* | build a smart city: Synergy advises, you decide |
+| 🛰️ | **[Model Hangar](https://ranjith1605.github.io/humanSi.007/web/hangar.html)** | unlock real open-source models |
+
+## How to play
+
+1. **Open** the link on any phone or computer.
+2. **Pick** a mode.
+3. **Decide.** At every gate and every SI proposal: **PASS · REVISE · STOP**.
+
+Every mode runs on the same six gates:
+
+```mermaid
+flowchart LR
+  G1["G1 · Purpose"] --> G2["G2 · Risk"] --> G3["G3 · People"] --> G4["G4 · Oversight"] --> G5["G5 · Adoption"] --> G6["G6 · Lifecycle"]
+```
+
+<details>
+<summary><b>Controls and running it yourself</b></summary>
+
+**[ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/)**
+redirects into `web/`, where the landing page, Nova Run and the Model Hangar
+live. On GitHub Pages the site runs in **solo mode**: the same game and the same
+scoring, with your runs kept in your own browser. The shared fleet board and
+the SI console need the fleet server (next section).
+
+To play from a clone, serve `web/` as static files:
+
+```bash
+python3 -m http.server --directory web 8000    # then open http://localhost:8000/
+```
+
+| Action | Keyboard | Gamepad | Touch |
+|--------|----------|---------|-------|
+| Move | ← → or A D | left stick or D-pad | ◀ ▶ |
+| Jump (hold for height) | Space, Z, K, W or ↑ | A | Jump |
+| Glide | press jump again in the air and hold | A, again and hold | Jump, again and hold |
+| Harmony pulse | X, J or Enter | X or B | Pulse |
+| Drop through / look down | ↓ or S | stick or D-pad down | ▼ |
+| Pause | P or Esc | Start | the II button |
+| Mute | M | | the Sound button on the pause screen |
+
+The touch buttons appear only on touch devices. Menus, briefings and gate
+verdicts (keys 1, 2, 3) work with the keyboard alone.
+
+**The Glass Box** is at `/inspect.html` (linked from the landing page). It is
+point-and-click: probe a factor, name the deciding one, give a verdict. No
+install, no server, nothing stored beyond your best score on your own device.
+
+**Synergy City** is at `/city.html` (linked from the landing page). Walk with
+WASD or the arrows, Shift to run, Space to hop, drag or the right stick to look,
+E to use a place, Esc to pause; gamepad and touch work too. It needs WebGL — a fallback with plain links shows if
+the browser can't run it.
+
+**Architect** (*in the works*) will be at `/architect.html`. Pick a tool from the palette and tap or
+drag on the map (roads paint as lines, zones as rectangles). Drag to pan, pinch
+or scroll to zoom, two fingers or right-drag to rotate. Space pauses; 1, 2 and 3
+set the speed. The city saves itself in your browser.
+
+**On a phone**, the 3D views watch their own frame rate and lower the
+resolution, then the detail, until they run smoothly on the device in your hand.
+*In the works:* installing every page as an app (Add to Home Screen on iOS,
+Install on Android) that opens offline once you have visited it.
+
+</details>
+
+<details>
+<summary><b>The Rule Book</b>: the Charter and the Six Gates in full</summary>
 
 The Rule Book has two parts. The **Charter** says *why* humans and SI work
 together; the **Six Gates** say *how*. The full text lives in one file,
@@ -79,9 +161,10 @@ gate asks one hard question and ends in a verdict:
 - **HA** means break the rule: break conventions, never the law or the truth.
 - **RI** means become the rule: the method becomes the vocabulary other people use.
 
----
+</details>
 
-## The simulation
+<details>
+<summary><b>The worlds</b>, in more detail</summary>
 
 **Nova Run** is an original, fast side-scrolling platformer. You play **Nova,
 the ship's penguin navigator**, and run the Six Gates through six worlds:
@@ -112,48 +195,25 @@ decision you cannot inspect.* Some boxes are glass, some are sealed, and some
 look clean until you find the proxy. It runs entirely in the browser, offline,
 and keeps no score anywhere but your own device.
 
-**Synergy City** (new) is a 3D district you can walk. Step aboard the ISV
+**Synergy City** is a 3D district you can walk. Step aboard the ISV
 Synergy as Nova and stroll its Purpose Quarter — a low-poly open world, built in
 the browser with three.js, with a lit skyline, a day/night sky and a crowd going
-about its day. The Rule Book, Nova Run, the Glass Box and the Model Hangar are
+about its day. *In the works:* sky-pods streaming along the skyway overhead, and
+an electric roadster by the plaza that you drive, then lift off and fly above
+the rooftops. The Rule Book, Nova Run, the Glass Box and the Model Hangar are
 places here: walk up and press E to enter. It needs WebGL and runs solo; a plain
 link to each destination is always there for browsers that can't open it.
 
-## Play
+**Architect** (*in the works*) is the city-builder. Zone homes, shops and industry on a
+64 × 64 grid, wire power, lay roads, and watch a smart city grow: solar roofs,
+green roofs and batteries cut its power draw, and skyports put its traffic in
+the air. Its SI, **Synergy**, reads the same maps you do and proposes actions
+with its reasons; you accept or decline, and every decision is logged. Synergy
+is a rule-based advisor, not a mind: the game is about the oversight, not the
+oracle. How the genre works, and how Architect differs, is written up in
+[docs/ARCHITECT.md](docs/ARCHITECT.md).
 
-**[ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/)**
-redirects into `web/`, where the landing page, Nova Run and the Model Hangar
-live. On GitHub Pages the site runs in **solo mode**: the same game and the same
-scoring, with your runs kept in your own browser. The shared fleet board and
-the SI console need the fleet server (next section).
-
-To play from a clone, serve `web/` as static files:
-
-```bash
-python3 -m http.server --directory web 8000    # then open http://localhost:8000/
-```
-
-| Action | Keyboard | Gamepad | Touch |
-|--------|----------|---------|-------|
-| Move | ← → or A D | left stick or D-pad | ◀ ▶ |
-| Jump (hold for height) | Space, Z, K, W or ↑ | A | Jump |
-| Glide | press jump again in the air and hold | A, again and hold | Jump, again and hold |
-| Harmony pulse | X, J or Enter | X or B | Pulse |
-| Drop through / look down | ↓ or S | stick or D-pad down | ▼ |
-| Pause | P or Esc | Start | the II button |
-| Mute | M | | the Sound button on the pause screen |
-
-The touch buttons appear only on touch devices. Menus, briefings and gate
-verdicts (keys 1, 2, 3) work with the keyboard alone.
-
-**The Glass Box** is at `/inspect.html` (linked from the landing page). It is
-point-and-click: probe a factor, name the deciding one, give a verdict. No
-install, no server, nothing stored beyond your best score on your own device.
-
-**Synergy City** is at `/city.html` (linked from the landing page). Walk with
-WASD or the arrows, Shift to run, drag or the right stick to look, E to use a
-place, Esc to pause; gamepad and touch work too. It needs WebGL — a fallback
-with plain links shows if the browser can't run it.
+</details>
 
 ## Run the fleet server
 
@@ -232,7 +292,9 @@ CI runs exactly these on every push and pull request. Scoring lives in
 scoring or Rule Book change, rebuild the shared fixture with
 `node web/js/scoring.test.mjs --regenerate`, review the diff, and make both test
 suites pass. `play.html?debug=1` exposes `window.__humansi` for test bots, and
-`&timescale=N` (1–8) speeds up the simulation.
+`&timescale=N` (1–8) speeds up the simulation. `city.html?debug=1` exposes
+`window.__city`; `?quality=low|high` forces a detail tier and `?perf=off` pins
+the resolution.
 
 `scripts/build-media.sh` regenerates every briefing image and video from the
 original artwork. It needs ffmpeg and Python 3 with Pillow and NumPy, and it
@@ -256,11 +318,13 @@ This repository is being built in the open. The current state:
 | The Glass Box: the Gate-4 inspection puzzle | ✅ built: five cases, full run checked in a browser at desktop and phone width |
 | Synergy City (Phase 1): the 3D Purpose Quarter | ✅ built: walkable, four places, day/night, crowd; verified rendering (~30 draw calls) with no console errors |
 | Landing page | ✅ built |
+| Input and adaptive resolution | ✅ presses count exactly once at any frame rate; resolution and detail adapt to the device's real frame rate |
+| Architect (city-builder), sky-pods and the roadster, install/offline | 🛠 in the works: design in [`docs/ARCHITECT.md`](docs/ARCHITECT.md) and [`docs/CITY.md`](docs/CITY.md) |
 | Fleet server (Go): server scoring, shared board, live feed, launch clearance | ✅ built and checked end to end with the site |
 | Model Hangar page and SI console | ✅ built; the console is tested against a stand-in for Ollama, not yet against a real model |
 | Briefing video and images ([`build-media.sh`](scripts/build-media.sh)) | ✅ built; the WebM videos are checked in a browser, the H.264 fallback is not yet |
-| CI ([`ci.yml`](.github/workflows/ci.yml)) | 🛠 in the repo; every check passes locally, first GitHub run pending |
-| GitHub Pages | 🛠 Pages already builds this repo from `main`; the root redirect and `.nojekyll` (checked under `/humanSi.007/` locally) make the game live once this lands on `main` |
+| CI ([`ci.yml`](.github/workflows/ci.yml)) | ✅ runs on every push and pull request |
+| GitHub Pages | ✅ live at [ranjith1605.github.io/humanSi.007](https://ranjith1605.github.io/humanSi.007/), deployed from `main` on every merge |
 | Docker image | 🛠 [`Dockerfile`](Dockerfile) in the repo, not yet built and run |
 
 ## Credits
