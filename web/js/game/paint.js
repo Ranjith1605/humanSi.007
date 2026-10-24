@@ -251,9 +251,14 @@ export function flipH(src) {
   return c;
 }
 
-/** A soft round glow sprite (for additive light), cached by key. */
+/** A soft round glow sprite (for additive light), cached by key. Strength is
+ * quantised to sixteenths: callers animate it with sin(time), and an exact
+ * float key made a new canvas every frame and kept it forever (600 per 10 s
+ * beside a gate). Sixteen steps bound the cache and look the same, since the
+ * alpha is quantised again below. */
 const glowCache = new Map();
 export function glow(radius, hex, strength = 1) {
+  strength = Math.round(strength * 16) / 16;
   const key = `${radius}|${hex}|${strength}`;
   if (glowCache.has(key)) return glowCache.get(key);
   const size = radius * 2;
