@@ -162,6 +162,9 @@ p { margin: 0 0 1em; }
 }
 
 .topbar__mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 1rem;
@@ -177,6 +180,9 @@ p { margin: 0 0 1em; }
   margin-left: auto;
 }
 .topbar__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
   padding: 8px 12px;
   border-radius: var(--radius-s);
   font-size: 0.875rem;
@@ -188,7 +194,7 @@ p { margin: 0 0 1em; }
 .topbar__play {
   margin-left: auto;
   padding: 8px 16px;
-  min-height: 40px;
+  min-height: var(--tap);
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--edge-strong);
@@ -436,11 +442,14 @@ p { margin: 0 0 1em; }
 }
 
 .hero__hangar {
+  position: relative;
   color: var(--text-dim);
   text-decoration: none;
   border-bottom: 1px solid rgba(159, 176, 211, 0.35);
   padding: 4px 0;
 }
+/* A finger-sized hit area around the quiet link, without moving its underline. */
+.hero__hangar::after { content: ''; position: absolute; inset: -7px -8px; }
 .hero__hangar:hover { color: var(--text); border-bottom-color: var(--text); }
 
 .mode {
@@ -757,8 +766,8 @@ p { margin: 0 0 1em; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: var(--tap);
+  padding: 6px 14px;
   border: 1px solid rgba(159, 176, 211, 0.2);
   border-radius: 999px;
   font-size: 0.875rem;
@@ -994,7 +1003,7 @@ p { margin: 0 0 1em; }
 .gate__meta dt {
   margin-bottom: 4px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--faint);
@@ -1029,7 +1038,9 @@ p { margin: 0 0 1em; }
   background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 .chip:hover { color: #fff; border-color: var(--accent); }
-.chip .mono { font-size: 0.6875rem; color: var(--accent); }
+.chip .mono { font-size: var(--text-xs); color: var(--accent); }
+/* Article chips stay compact for a mouse and grow to a full touch target for a finger. */
+@media (pointer: coarse) { .chip { min-height: var(--tap); padding-inline: 12px; } }
 
 @media (min-width: 720px) {
   .gate__meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
