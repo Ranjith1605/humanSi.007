@@ -180,6 +180,9 @@ main:focus,
 }
 
 .topbar__mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 1rem;
@@ -197,7 +200,7 @@ main:focus,
 .topbar__nav a {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: var(--tap);
   padding: 8px 12px;
   border-radius: var(--radius-s);
   font-size: 0.875rem;
@@ -212,7 +215,7 @@ main:focus,
   border: 1px solid var(--edge-strong);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text);
@@ -682,6 +685,7 @@ main:focus,
 }
 .manifest__pub { font-size: 0.875rem; color: var(--text-dim); }
 .manifest__data { margin: 18px 0 0; font-size: 0.9375rem; }
+.manifest__data a { display: inline-flex; align-items: center; min-height: var(--tap); }
 
 /* ------------------------------------------------------------ cards -- */
 
@@ -742,7 +746,7 @@ main:focus,
   border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
@@ -755,7 +759,7 @@ main:focus,
   display: block;
   margin-bottom: 2px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--faint);
@@ -767,7 +771,7 @@ main:focus,
   border: 1px solid rgba(159, 176, 211, 0.35);
   border-radius: 4px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.06em;
   line-height: 1.6;
   vertical-align: 1px;
@@ -801,7 +805,7 @@ main:focus,
   align-items: center;
   gap: 6px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--green);
@@ -1077,7 +1081,7 @@ main:focus,
 .msg__label {
   margin: 0 0 6px;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.04em;
   color: var(--faint);
 }

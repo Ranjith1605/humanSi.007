@@ -36,6 +36,7 @@
   <header class="topbar" id="topbar">
     <a class="topbar__mark" href="#top">HumanSI</a>
     <nav class="topbar__nav" aria-label="Sections">
+      <a href="#modes">Modes</a>
       <a href="#nova-run">Nova Run</a>
       <a href="#charter">Charter</a>
       <a href="#gates">Six Gates</a>
@@ -89,6 +90,80 @@
       </div>
     </noscript>
     <p class="load-state" id="load-state" role="status" hidden></p>
+
+    <!-- ============================================================ Modes -->
+    <!-- Static on purpose: the way into every mode works before (and without)
+         the Rule Book loading. The emblems are drawn in code; colours come
+         from classes because the CSP forbids inline style attributes. -->
+    <section class="section modes" id="modes" aria-labelledby="modes-title">
+      <header class="section__head modes__head">
+        <p class="eyebrow">Pick a mode</p>
+        <h2 class="section__title" id="modes-title">Four ways aboard</h2>
+        <p class="modes__lede">Every mode runs on the same six gates. At every gate and every SI proposal, you make the call: <b class="verdict-word verdict-word--pass">pass</b>, <b class="verdict-word verdict-word--revise">revise</b> or <b class="verdict-word verdict-word--stop">stop</b>.</p>
+      </header>
+      <ul class="modes__grid">
+        <li>
+          <a class="mode-card mode-card--nova" href="play.html">
+            <svg class="mode-card__art" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <path class="art-dim" d="M6 54h52"/>
+              <path d="M12 54V44a5 5 0 0 1 10 0v10M27 54V44a5 5 0 0 1 10 0v10M42 54V44a5 5 0 0 1 10 0v10"/>
+              <path class="art-dash" d="M8 46C14 18 30 10 44 20"/>
+              <circle class="art-fill" cx="47" cy="23" r="4.5"/>
+            </svg>
+            <span class="mode-card__kind">Platformer · 6 worlds</span>
+            <span class="mode-card__title">Nova Run</span>
+            <span class="mode-card__text">Race the Six Gates as Nova, the ship's penguin, and give a verdict at every archway.</span>
+            <span class="mode-card__go">Play <span aria-hidden="true">→</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="mode-card mode-card--glass" href="inspect.html">
+            <svg class="mode-card__art" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <rect class="art-dim" x="8" y="10" width="44" height="44" rx="6"/>
+              <path d="M18 46v-8M26 46V26M34 46v-6"/>
+              <circle cx="40" cy="26" r="9"/>
+              <path d="M46.5 32.5 55 41"/>
+              <circle class="art-fill" cx="40" cy="26" r="2.5"/>
+            </svg>
+            <span class="mode-card__kind">Puzzle · 5 cases</span>
+            <span class="mode-card__title">The Glass Box</span>
+            <span class="mode-card__text">Open an SI's decision about a person and find the factor that really tipped it.</span>
+            <span class="mode-card__go">Open <span aria-hidden="true">→</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="mode-card mode-card--city" href="city.html">
+            <svg class="mode-card__art" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <path class="art-dim" d="M6 54h52"/>
+              <path d="M11 54V36h9v18M23 54V26h10v28M36 54V32h9v22M48 54V40h6v14"/>
+              <path class="art-dash" d="M6 26C20 12 44 12 58 22"/>
+              <circle class="art-fill" cx="44" cy="15.5" r="3"/>
+              <path class="art-win" d="M27 32h2M27 38h2M27 44h2M40 38h1M15 42h1M15 47h1"/>
+            </svg>
+            <span class="mode-card__kind">3D · needs WebGL</span>
+            <span class="mode-card__title">Synergy City</span>
+            <span class="mode-card__text">Walk the ship's station-city, where every other mode is a place you can enter.</span>
+            <span class="mode-card__go">Enter <span aria-hidden="true">→</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="mode-card mode-card--hangar" href="hangar.html">
+            <svg class="mode-card__art" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <path class="art-dim" d="M6 54V24L32 10l26 14v30"/>
+              <rect x="15" y="28" width="34" height="26" rx="2"/>
+              <path class="art-dash" d="M15 33h34"/>
+              <circle cx="32" cy="43" r="6.5"/>
+              <circle class="art-fill" cx="32" cy="43" r="2.2"/>
+            </svg>
+            <span class="mode-card__kind">Catalog · open models</span>
+            <span class="mode-card__title">Model Hangar</span>
+            <span class="mode-card__text">Earn launch clearance and unlock real open-source models you can run yourself.</span>
+            <span class="mode-card__go">Visit <span aria-hidden="true">→</span></span>
+          </a>
+        </li>
+      </ul>
+      <p class="modes__next"><span class="modes__soon">In the works</span> <span><b>Architect</b>: build a smart city where Synergy advises and you decide.</span></p>
+    </section>
 
     <!-- ============================================================ Nova Run -->
     <section class="section teaser" id="nova-run" aria-labelledby="teaser-title" hidden>

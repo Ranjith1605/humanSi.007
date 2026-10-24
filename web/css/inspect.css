@@ -15,7 +15,7 @@ body {
   top: 0;
   background: var(--gold);
   color: #000;
-  padding: 0.5rem 0.9rem;
+  padding: 0.75rem 0.9rem;
   border-radius: 0 0 var(--radius-s) var(--radius-s);
   z-index: 20;
 }
@@ -27,13 +27,17 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 1rem;
-  padding: 0.85rem var(--gutter);
+  gap: 0 1rem;
+  padding: 0.35rem var(--gutter);
   border-bottom: 1px solid var(--edge);
   background: rgba(5, 6, 15, 0.7);
   backdrop-filter: blur(8px);
 }
 .topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;  /* flex drops the space between "HumanSI" and its span */
+  min-height: var(--tap);
   font-family: var(--font-display);
   font-weight: 900;
   letter-spacing: 0.04em;
@@ -43,6 +47,9 @@ body {
 .topbar__brand span { color: var(--cyan); }
 .topbar__nav { display: flex; gap: 0.3rem 1rem; flex-wrap: wrap; }
 .topbar__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
   color: var(--text-dim);
   text-decoration: none;
   font-size: 0.95rem;
@@ -69,7 +76,7 @@ body {
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--cyan);
@@ -112,6 +119,10 @@ h2 {
 .row { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.2rem; }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 0.85rem;
@@ -188,7 +199,7 @@ h2 {
 .factor__name { font-weight: 600; }
 .factor__tag {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -277,7 +288,7 @@ h2 {
 .feedback__cites { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .cite {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.06em;
   border: 1px solid var(--edge);
   border-radius: 999px;
@@ -289,7 +300,7 @@ h2 {
 .debrief__table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.92rem; }
 .debrief__table th,
 .debrief__table td { text-align: left; padding: 0.45rem 0.4rem; border-bottom: 1px solid var(--edge); }
-.debrief__table th { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+.debrief__table th { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
 .debrief__table td:last-child, .debrief__table th:last-child { text-align: right; font-family: var(--font-mono); }
 .cell-right { color: var(--green); }
 .cell-part { color: var(--gold); }
@@ -313,6 +324,11 @@ h2 {
   gap: 0.4rem;
 }
 .foot a { color: var(--text-dim); }
+/* Footer links sit in a sentence-like row: a larger hit area for a finger
+   without spreading the row apart. */
+@media (pointer: coarse) {
+  .foot a { display: inline-block; padding: 12px 6px; margin: -12px -6px; }
+}
 .foot a:hover { color: var(--text); }
 
 @media (max-width: 420px) {
