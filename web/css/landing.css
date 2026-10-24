@@ -538,6 +538,170 @@ p { margin: 0 0 1em; }
   .reveal-on .reveal:not(.is-in) { opacity: 1; transform: none; }
 }
 
+/* ------------------------------------------------------------ modes -- */
+
+/* The hub under the hero: one card per playable mode, each a single link.
+   Built on the shared tokens (tokens.css). */
+.modes { padding-top: clamp(56px, 8vw, 104px); }
+.modes__head { max-width: 46rem; }
+.modes__lede {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: var(--text-dim);
+  text-wrap: pretty;
+}
+.verdict-word { font-weight: 600; }
+.verdict-word--pass { color: var(--pass); }
+.verdict-word--revise { color: var(--revise); }
+.verdict-word--stop { color: var(--stop); }
+
+.modes__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.modes__grid > li { display: flex; }
+
+.mode-card {
+  --accent: var(--cyan);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: var(--space-5);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-1);
+  color: var(--text);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2), box-shadow var(--dur-2);
+}
+/* A wash of the mode's colour in the corner, so the four read as a set of
+   distinct places rather than four copies of one box. */
+.mode-card::before {
+  content: '';
+  position: absolute;
+  inset: -40% -40% auto auto;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--accent), transparent);
+  opacity: 0.12;
+  pointer-events: none;
+  transition: opacity var(--dur-3);
+}
+.mode-card:hover,
+.mode-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-2), 0 0 32px -8px var(--accent);
+}
+.mode-card:hover::before,
+.mode-card:focus-visible::before { opacity: 0.22; }
+.mode-card--nova { --accent: var(--gold); }
+.mode-card--glass { --accent: var(--cyan); }
+.mode-card--city { --accent: var(--violet); }
+.mode-card--hangar { --accent: var(--green); }
+
+.mode-card__art {
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--space-2);
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+.mode-card__art .art-dim { opacity: 0.45; }
+.mode-card__art .art-dash { stroke-dasharray: 2 5; }
+.mode-card__art .art-fill { fill: var(--accent); stroke: none; }
+.mode-card__art .art-win { stroke: var(--gold); stroke-width: 2; opacity: 0.85; }
+.mode-card:hover .art-dash,
+.mode-card:focus-visible .art-dash { animation: art-dash 1.4s linear infinite; }
+@keyframes art-dash { to { stroke-dashoffset: -14; } }
+
+.mode-card__kind {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.mode-card__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  letter-spacing: 0.02em;
+}
+.mode-card__text {
+  font-size: var(--text-md);
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+.mode-card__go {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.modes__next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-5) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed rgba(120, 220, 255, 0.22);
+  border-radius: var(--radius-m);
+  color: var(--text-dim);
+}
+.modes__next b { color: var(--text); font-weight: 600; }
+.modes__soon {
+  padding: 2px var(--space-2);
+  border: 1px solid rgba(255, 181, 71, 0.45);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* Phones: the art moves beside the words so four cards fit in about one
+   screen instead of four. */
+@media (max-width: 560px) {
+  .mode-card {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    column-gap: var(--space-4);
+    row-gap: var(--space-1);
+    padding: var(--space-4);
+  }
+  .mode-card__art { grid-row: 1 / span 4; width: 48px; height: 48px; margin: 0; }
+  .mode-card__go { padding-top: var(--space-1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-card:hover, .mode-card:focus-visible { transform: none; }
+  .mode-card:hover .art-dash, .mode-card:focus-visible .art-dash { animation: none; }
+}
+
 /* ------------------------------------------------------------ teaser -- */
 
 .teaser { padding-top: clamp(56px, 8vw, 110px); }
