@@ -13,6 +13,21 @@ import {
   beaconSprite, terminalSprite, capsuleSprite, crewSprite, checkpointSprite, gateSprite,
 } from './sprites.js';
 import { circle } from './particles.js';
+import { groundBelow } from './level.js';
+
+// A colour grade per world: a vertical wash laid over the finished frame in
+// soft-light, light from above and shade below, so each world has one light
+// source and depth instead of an evenly lit picture. [top, bottom, strength].
+// Station shades its pale hull floor; engineering gains contrast between the
+// lamps and the deck. Kept gentle so hazards stay as readable as before.
+const GRADE = {
+  crystal: ['#ff9cf0', '#1c0638', 0.34],
+  rigs: ['#8fb0ff', '#7a2a10', 0.3],
+  biodome: ['#fff6c8', '#0f4a44', 0.3],
+  datacity: ['#ff7ad8', '#03213f', 0.32],
+  engineering: ['#ffd08a', '#160802', 0.4],
+  station: ['#d8eeff', '#2a2450', 0.42],
+};
 
 export class Renderer {
   constructor(canvas) {
@@ -26,6 +41,7 @@ export class Renderer {
     this.baked = null;
     this.bakedFor = null;
     this.vignette = null;
+    this.grade = null;
     this.resize();
   }
 
@@ -78,10 +94,38 @@ export class Renderer {
     return this.vignette;
   }
 
+  /** The world's colour grade as a 1-pixel-wide strip, rebuilt when the
+   * world or the view height changes, stretched across the frame. */
+  gradeCanvas(world) {
+    const key = `${world}|${this.H}`;
+    if (this.grade && this.grade.key === key) return this.grade;
+    const [top, bottom, strength] = GRADE[world] || GRADE.crystal;
+    const c = makeCanvas(1, this.H);
+    const g = c.getContext('2d');
+    const grad = g.createLinearGradient(0, 0, 0, this.H);
+    grad.addColorStop(0, top);
+    grad.addColorStop(0.45, mix(top, '#808080', 0.75));
+    grad.addColorStop(1, bottom);
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 1, this.H);
+    this.grade = { key, canvas: c, strength };
+    return this.grade;
+  }
+
+  drawGrade(ctx, world) {
+    const grade = this.gradeCanvas(world);
+    ctx.save();
+    ctx.globalCompositeOperation = 'soft-light';
+    ctx.globalAlpha = grade.strength;
+    ctx.drawImage(grade.canvas, 0, 0, this.W, this.H);
+    ctx.restore();
+  }
+
   /** Title backdrop: a world's parallax drifting by. */
   drawBackdrop(world, time) {
     const ctx = this.ctx;
     drawBackground(ctx, world, time * 24, 0, this.W, this.H, this.H, 0.3, time);
+    this.drawGrade(ctx, world);
     ctx.drawImage(this.vignetteCanvas(), 0, 0);
   }
 
@@ -124,6 +168,7 @@ export class Renderer {
     drawFalseWalls(ctx, lv, ox, oy);
     this.drawEntities(ctx, run, ox, oy, time, true);
     run.particles.draw(ctx, ox, oy);
+    this.drawGrade(ctx, run.world);
     this.drawLights(ctx, run, ox, oy, time);
 
     if (run.fx.flash > 0) {
@@ -153,9 +198,11 @@ export class Renderer {
 
   drawPlayer(ctx, run, alpha, ox, oy, time) {
     const pl = run.player;
-    if (pl.invuln > 0 && pl.alive && Math.floor(pl.invuln * 14) % 2 === 1) return;
     const x = pl.prevX + (pl.x - pl.prevX) * alpha;
     const y = pl.prevY + (pl.y - pl.prevY) * alpha;
+    // Drawn before the blink check, so it also marks where Nova is while she flickers.
+    if (pl.alive && run.state !== 'gate') this.drawShadow(ctx, run, x, y, ox, oy);
+    if (pl.invuln > 0 && pl.alive && Math.floor(pl.invuln * 14) % 2 === 1) return;
     const fr = novaFrame(pl, time);
     let sx = pl.sx;
     let sy = pl.sy;
@@ -182,6 +229,38 @@ export class Renderer {
       ctx.fillStyle = Math.floor(time * 20) % 2 ? '#ffb547' : '#ff6b8b';
       ctx.fillRect(px + 6 + Math.floor(Math.random() * 20), py + 8 + Math.floor(Math.random() * 16), 1, 1);
     }
+  }
+
+  /** A contact shadow on the surface below Nova: it sets her on the ground
+   * and, in the air, shows where she will land. It narrows and fades with
+   * height, widens with her landing squash, and is absent over a pit. */
+  drawShadow(ctx, run, x, y, ox, oy) {
+    const lv = run.lv;
+    const pl = run.player;
+    let ground = pl.onGround ? y : -1;
+    if (ground < 0) {
+      const tx = Math.floor(x);
+      if (tx >= 0 && tx < lv.w) {
+        const row = groundBelow(lv, tx, Math.max(-1, Math.floor(y) - 1));
+        if (row >= 0 && row >= y - 0.05) ground = row;
+      }
+      for (const p of lv.platforms) {
+        if (Math.abs(x - p.x) <= p.w / 2 && p.y >= y - 0.05 && (ground < 0 || p.y < ground)) ground = p.y;
+      }
+    }
+    if (ground < 0) return;
+    const h = ground - y;
+    if (h > 7) return;
+    const k = 1 - Math.max(0, h) / 7;
+    const w = Math.max(4, Math.round(16 * (0.5 + 0.5 * k) * pl.sx));
+    const sx = Math.round(x * TILE - ox - w / 2);
+    const sy = Math.round(ground * TILE - oy);
+    ctx.globalAlpha = 0.1 + 0.32 * k;
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(sx + 2, sy - 1, w - 4, 1);
+    ctx.fillRect(sx, sy, w, 1);
+    ctx.fillRect(sx + 2, sy + 1, w - 4, 1);
+    ctx.globalAlpha = 1;
   }
 
   drawEntities(ctx, run, ox, oy, time, front) {
