@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1,
+        "title": "Initialize Agent Loop",
+        "description": "Verify core state and local file storage.",
+        "status": "completed",
+        "created_at": "2026-10-28 15:08:55.299196"
+    },
+    {
+        "id": 2,
+        "title": "Initialize Agent Loop",
+        "description": "Verify core state and local file storage.",
+        "status": "completed",
+        "created_at": "2026-10-28 15:09:40.924715"
+    }
+]
