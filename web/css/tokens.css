@@ -37,6 +37,43 @@
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --gutter: clamp(16px, 4vw, 40px);
+
+  /* Type scale. One body size and a few fixed steps, so the same role reads
+     the same on every page; only display sizes are fluid. Nothing that has to
+     be read is set below --text-xs. */
+  --text-xs: 0.75rem;                                    /* 12px: eyebrows, labels, mono tags (uppercase, tracked) */
+  --text-sm: 0.875rem;                                   /* 14px: meta, captions, chips */
+  --text-md: 1rem;                                       /* 16px: body */
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);    /* 17–20px: lede */
+  --text-xl: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);  /* 20–26px: card titles */
+  --text-2xl: clamp(1.75rem, 1.2rem + 2.2vw, 3rem);      /* 28–48px: section titles */
+  --leading-tight: 1.15;
+  --leading: 1.6;
+  --tracking-label: 0.16em;
+
+  /* Spacing on a 4px grid. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+
+  /* Surfaces, from the floor up: page, card, raised card. */
+  --surface-1: linear-gradient(180deg, rgba(18, 26, 48, 0.72), rgba(8, 12, 26, 0.82));
+  --surface-2: linear-gradient(180deg, rgba(27, 37, 65, 0.85), rgba(12, 18, 36, 0.92));
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 18px 48px rgba(0, 0, 0, 0.5);
+
+  /* The smallest thing a finger has to hit (WCAG 2.5.5). */
+  --tap: 44px;
+
+  /* Motion: short for feedback, longer for things that move into place. */
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 420ms;
   color-scheme: dark;
 }
 
